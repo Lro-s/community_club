@@ -31,67 +31,67 @@ public class SysDataSource {
      */
     @TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(value = "id")
-    private java.lang.String id;
+    private String id;
     /**
      * 数据源编码
      */
     @Excel(name = "数据源编码", width = 15)
     @ApiModelProperty(value = "数据源编码")
-    private java.lang.String code;
+    private String code;
     /**
      * 数据源名称
      */
     @Excel(name = "数据源名称", width = 15)
     @ApiModelProperty(value = "数据源名称")
-    private java.lang.String name;
+    private String name;
     /**
      * 描述
      */
     @Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")
-    private java.lang.String remark;
+    private String remark;
     /**
      * 数据库类型
      */
     @Dict(dicCode = "database_type")
     @Excel(name = "数据库类型", width = 15, dicCode = "database_type")
     @ApiModelProperty(value = "数据库类型")
-    private java.lang.String dbType;
+    private String dbType;
     /**
      * 驱动类
      */
     @Excel(name = "驱动类", width = 15)
     @ApiModelProperty(value = "驱动类")
-    private java.lang.String dbDriver;
+    private String dbDriver;
     /**
      * 数据源地址
      */
     @Excel(name = "数据源地址", width = 15)
     @ApiModelProperty(value = "数据源地址")
-    private java.lang.String dbUrl;
+    private String dbUrl;
     /**
      * 数据库名称
      */
     @Excel(name = "数据库名称", width = 15)
     @ApiModelProperty(value = "数据库名称")
-    private java.lang.String dbName;
+    private String dbName;
     /**
      * 用户名
      */
     @Excel(name = "用户名", width = 15)
     @ApiModelProperty(value = "用户名")
-    private java.lang.String dbUsername;
+    private String dbUsername;
     /**
      * 密码
      */
     @Excel(name = "密码", width = 15)
     @ApiModelProperty(value = "密码")
-    private java.lang.String dbPassword;
+    private String dbPassword;
     /**
      * 创建人
      */
     @ApiModelProperty(value = "创建人")
-    private java.lang.String createBy;
+    private String createBy;
     /**
      * 创建日期
      */
@@ -103,7 +103,7 @@ public class SysDataSource {
      * 更新人
      */
     @ApiModelProperty(value = "更新人")
-    private java.lang.String updateBy;
+    private String updateBy;
     /**
      * 更新日期
      */
@@ -116,5 +116,5 @@ public class SysDataSource {
      */
     @Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
-    private java.lang.String sysOrgCode;
+    private String sysOrgCode;
 }

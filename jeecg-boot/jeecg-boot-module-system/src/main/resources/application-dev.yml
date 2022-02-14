@@ -319,3 +319,8 @@ third-app:
       # appSecret
       client-secret: ??
       agent-id: ??
+
+#自定义配置
+community:
+  path:
+    domain: http://localhost:8080   #网站域名

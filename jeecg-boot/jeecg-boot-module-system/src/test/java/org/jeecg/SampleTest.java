@@ -1,4 +1,4 @@
-//package org.jeecg;
+package org.jeecg;//package org.jeecg;
 //
 //import org.jeecg.modules.demo.mock.MockController;
 //import org.jeecg.modules.demo.test.entity.JeecgDemo;

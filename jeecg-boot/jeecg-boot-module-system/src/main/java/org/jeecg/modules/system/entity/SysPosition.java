@@ -31,37 +31,37 @@ public class SysPosition {
      */
     @TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(value = "id")
-    private java.lang.String id;
+    private String id;
     /**
      * 职务编码
      */
     @Excel(name = "职务编码", width = 15)
     @ApiModelProperty(value = "职务编码")
-    private java.lang.String code;
+    private String code;
     /**
      * 职务名称
      */
     @Excel(name = "职务名称", width = 15)
     @ApiModelProperty(value = "职务名称")
-    private java.lang.String name;
+    private String name;
     /**
      * 职级
      */
     @Excel(name = "职级", width = 15,dicCode ="position_rank")
     @ApiModelProperty(value = "职级")
     @Dict(dicCode = "position_rank")
-    private java.lang.String postRank;
+    private String postRank;
     /**
      * 公司id
      */
     @Excel(name = "公司id", width = 15)
     @ApiModelProperty(value = "公司id")
-    private java.lang.String companyId;
+    private String companyId;
     /**
      * 创建人
      */
     @ApiModelProperty(value = "创建人")
-    private java.lang.String createBy;
+    private String createBy;
     /**
      * 创建时间
      */
@@ -73,7 +73,7 @@ public class SysPosition {
      * 修改人
      */
     @ApiModelProperty(value = "修改人")
-    private java.lang.String updateBy;
+    private String updateBy;
     /**
      * 修改时间
      */
@@ -86,5 +86,5 @@ public class SysPosition {
      */
     @Excel(name = "组织机构编码", width = 15)
     @ApiModelProperty(value = "组织机构编码")
-    private java.lang.String sysOrgCode;
+    private String sysOrgCode;
 }

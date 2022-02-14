@@ -31,18 +31,18 @@ public class SysDepartPermission {
 	/**id*/
 	@TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(value = "id")
-	private java.lang.String id;
+	private String id;
 	/**部门id*/
 	@Excel(name = "部门id", width = 15)
     @ApiModelProperty(value = "部门id")
-	private java.lang.String departId;
+	private String departId;
 	/**权限id*/
 	@Excel(name = "权限id", width = 15)
     @ApiModelProperty(value = "权限id")
-	private java.lang.String permissionId;
+	private String permissionId;
 	/**数据规则id*/
 	@ApiModelProperty(value = "数据规则id")
-	private java.lang.String dataRuleIds;
+	private String dataRuleIds;
 
 	public SysDepartPermission() {
 

@@ -31,31 +31,31 @@ public class SysDepartRolePermission {
 	/**id*/
 	@TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(value = "id")
-	private java.lang.String id;
+	private String id;
 	/**部门id*/
 	@Excel(name = "部门id", width = 15)
     @ApiModelProperty(value = "部门id")
-	private java.lang.String departId;
+	private String departId;
 	/**角色id*/
 	@Excel(name = "角色id", width = 15)
     @ApiModelProperty(value = "角色id")
-	private java.lang.String roleId;
+	private String roleId;
 	/**权限id*/
 	@Excel(name = "权限id", width = 15)
     @ApiModelProperty(value = "权限id")
-	private java.lang.String permissionId;
+	private String permissionId;
 	/**dataRuleIds*/
 	@Excel(name = "dataRuleIds", width = 15)
     @ApiModelProperty(value = "dataRuleIds")
-	private java.lang.String dataRuleIds;
+	private String dataRuleIds;
 	/** 操作时间 */
 	@Excel(name = "操作时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	@ApiModelProperty(value = "操作时间")
-	private java.util.Date operateDate;
+	private Date operateDate;
 	/** 操作ip */
-	private java.lang.String operateIp;
+	private String operateIp;
 
 	public SysDepartRolePermission() {
 	}

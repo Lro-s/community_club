@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -7,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
+import org.jeecg.modules.system.dto.UserRegisterDTO;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.springframework.transaction.annotation.Transactional;
@@ -252,4 +254,13 @@ public interface ISysUserService extends IService<SysUser> {
 	/** userId转为username */
 	List<String> userIdToUsername(Collection<String> userIdList);
 
+    Result<JSONObject> emailRegister(UserRegisterDTO userRegisterDTO);
+
+	/**
+	 * 激活邮箱
+	 * @param userId
+	 * @param activationCode
+	 * @return
+	 */
+    int activation(int userId, String activationCode);
 }

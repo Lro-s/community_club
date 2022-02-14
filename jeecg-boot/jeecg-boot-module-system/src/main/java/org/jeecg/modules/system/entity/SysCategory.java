@@ -23,32 +23,32 @@ public class SysCategory implements Serializable,Comparable<SysCategory>{
     
 	/**主键*/
 	@TableId(type = IdType.ASSIGN_ID)
-	private java.lang.String id;
+	private String id;
 	/**父级节点*/
-	private java.lang.String pid;
+	private String pid;
 	/**类型名称*/
 	@Excel(name = "类型名称", width = 15)
-	private java.lang.String name;
+	private String name;
 	/**类型编码*/
 	@Excel(name = "类型编码", width = 15)
-	private java.lang.String code;
+	private String code;
 	/**创建人*/
-	private java.lang.String createBy;
+	private String createBy;
 	/**创建日期*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private java.util.Date createTime;
 	/**更新人*/
-	private java.lang.String updateBy;
+	private String updateBy;
 	/**更新日期*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private java.util.Date updateTime;
 	/**所属部门*/
-	private java.lang.String sysOrgCode;
+	private String sysOrgCode;
 	/**是否有子节点*/
 	@Excel(name = "是否有子节点(1:有)", width = 15)
-	private java.lang.String hasChild;
+	private String hasChild;
 
 	@Override
 	public int compareTo(SysCategory o) {

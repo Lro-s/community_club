@@ -31,15 +31,15 @@ public class SysDepartRoleUser {
 	/**主键id*/
 	@TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(value = "主键id")
-	private java.lang.String id;
+	private String id;
 	/**用户id*/
 	@Excel(name = "用户id", width = 15)
     @ApiModelProperty(value = "用户id")
-	private java.lang.String userId;
+	private String userId;
 	/**角色id*/
 	@Excel(name = "角色id", width = 15)
     @ApiModelProperty(value = "角色id")
-	private java.lang.String droleId;
+	private String droleId;
 
 	public SysDepartRoleUser() {
 

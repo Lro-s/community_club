@@ -30,37 +30,37 @@ public class SysFillRule {
      */
     @TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(value = "主键ID")
-    private java.lang.String id;
+    private String id;
     /**
      * 规则名称
      */
     @Excel(name = "规则名称", width = 15)
     @ApiModelProperty(value = "规则名称")
-    private java.lang.String ruleName;
+    private String ruleName;
     /**
      * 规则Code
      */
     @Excel(name = "规则Code", width = 15)
     @ApiModelProperty(value = "规则Code")
-    private java.lang.String ruleCode;
+    private String ruleCode;
     /**
      * 规则实现类
      */
     @Excel(name = "规则实现类", width = 15)
     @ApiModelProperty(value = "规则实现类")
-    private java.lang.String ruleClass;
+    private String ruleClass;
     /**
      * 规则参数
      */
     @Excel(name = "规则参数", width = 15)
     @ApiModelProperty(value = "规则参数")
-    private java.lang.String ruleParams;
+    private String ruleParams;
     /**
      * 修改人
      */
     @Excel(name = "修改人", width = 15)
     @ApiModelProperty(value = "修改人")
-    private java.lang.String updateBy;
+    private String updateBy;
     /**
      * 修改时间
      */
@@ -74,7 +74,7 @@ public class SysFillRule {
      */
     @Excel(name = "创建人", width = 15)
     @ApiModelProperty(value = "创建人")
-    private java.lang.String createBy;
+    private String createBy;
     /**
      * 创建时间
      */

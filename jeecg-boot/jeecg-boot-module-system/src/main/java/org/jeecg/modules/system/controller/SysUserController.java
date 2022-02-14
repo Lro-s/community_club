@@ -24,6 +24,8 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
+import org.jeecg.modules.system.constant.UserConstants;
+import org.jeecg.modules.system.dto.UserRegisterDTO;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
@@ -37,6 +39,7 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -866,7 +869,11 @@ public class SysUserController {
         return result;
     }
 
-    
+
+    @PostMapping("/emailRegister")
+    public Result<JSONObject> userEmailRegister(@RequestBody UserRegisterDTO userRegisterDTO) {
+        return sysUserService.emailRegister(userRegisterDTO);
+    }
 
 
 	/**
@@ -945,6 +952,32 @@ public class SysUserController {
 		}
 		return result;
 	}
+
+    /**
+     * 激活邮箱
+     *
+     * @param userId
+     * @param activationCode
+     * @return
+     */
+    @GetMapping("/activation/{userId}/{activationCode}")
+    public Result<JSONObject> activation(@PathVariable("userId") int userId, @PathVariable("activationCode") String activationCode) {
+        Result<JSONObject> result = new Result<>();
+        int code = sysUserService.activation(userId, activationCode);
+        if (code == UserConstants.ACTIVATION_SUCCESS) {
+            result.setCode(200);
+            result.setMessage("您的账号已经可以正常使用了");
+            result.setSuccess(true);
+        } else if (code == UserConstants.ACTIVATION_REPEAT) {
+            result.setMessage("无效的操作，该账号已被激活");
+            result.setSuccess(false);
+        } else {
+            result.setMessage("激活失败，您提供的激活码不正常");
+            result.setSuccess(false);
+        }
+        return result;
+    }
+
 
 //	/**
 //	 * 根据用户名或手机号查询用户信息

@@ -1,10 +1,17 @@
 package org.jeecg.modules.system.service.impl;
+import java.util.Date;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.crypto.digest.DigestUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
@@ -12,19 +19,27 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
+import org.jeecg.common.util.MD5Util;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.UUIDGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.base.service.BaseCommonService;
+import org.jeecg.modules.system.constant.UserConstants;
+import org.jeecg.modules.system.dto.UserRegisterDTO;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.util.CommonUtil;
+import org.jeecg.modules.system.util.MailClient;
+import org.jeecg.modules.system.util.SecurityUtil;
 import org.jeecg.modules.system.vo.SysUserDepVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -68,6 +83,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
 	@Autowired
 	ThirdAppDingtalkServiceImpl dingtalkService;
+
+	@Resource
+	private MailClient mailClient;
+
+	/**
+	 * 域名
+	 */
+	@Value("${community.path.domain}")
+	private String domain;
+
+	/**
+	 * 项目名
+	 */
+	@Value("${server.servlet.context-path}")
+	private String contextPath;
 
     @Override
     @CacheEvict(value = {CacheConstant.SYS_USERS_CACHE}, allEntries = true)
@@ -539,4 +569,98 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		return userList.stream().map(SysUser::getUsername).collect(Collectors.toList());
 	}
 
+	@Override
+	@Transactional
+	public Result<JSONObject> emailRegister(UserRegisterDTO userRegisterDTO) {
+		Result<JSONObject> result = new Result<>();
+		checkRegisterInfo(userRegisterDTO,result);
+		registerUser(userRegisterDTO);
+		result.setMessage("操作成功！");
+		result.setSuccess(true);
+		return result;
+	}
+
+	private void checkRegisterInfo(UserRegisterDTO userRegisterDTO, Result<JSONObject> result) {
+		checkUserName(userRegisterDTO, result);
+		checkEmail(userRegisterDTO, result);
+	}
+
+	private void registerUser(UserRegisterDTO userRegisterDTO) {
+		SysUser sysUser = createUser(userRegisterDTO);
+		sendMessage(sysUser);
+	}
+
+	/**
+	 * 发送消息
+	 *
+	 * @param sysUser
+	 */
+	private void sendMessage(SysUser sysUser) {
+		String url = domain + contextPath + "/sys/user/activation/" + sysUser.getId() + "/" + sysUser.getActivationCode();
+		mailClient.sendMail(sysUser.getEmail(), "激活账号", url);
+	}
+
+	private SysUser createUser(UserRegisterDTO userRegisterDTO) {
+		SysUser sysUser = new SysUser();
+		//生成5位的随机数作为盐值
+		sysUser.setSalt(CommonUtil.generateUUID().substring(0, 5));
+		//密码盐值加密
+		sysUser.setPassword(CommonUtil.md5(userRegisterDTO.getPassword()+userRegisterDTO.getSalt()));
+		//发送随机字符串作为激活码
+		userRegisterDTO.setActivationCode(IdUtil.fastUUID());
+		//设置随机头像  这里使用牛客网的随机头像
+		sysUser.setAvatar(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
+		//设置账号默认为冻结状态
+		sysUser.setStatus(2);
+		//由超级管理员创建
+		sysUser.setCreateBy(UserConstants.ADMIN);
+		sysUser.setCreateTime(new Date());
+		//普通人
+		sysUser.setUserIdentity(0);
+		baseMapper.insert(sysUser);
+		return sysUser;
+	}
+
+	/**
+	 * 校验邮箱
+	 *
+	 * @param userRegisterDTO
+	 * @param result
+	 */
+	private void checkEmail(UserRegisterDTO userRegisterDTO, Result<JSONObject> result) {
+		QueryWrapper<SysUser> wrapper = new QueryWrapper();
+		wrapper.lambda().eq(SysUser::getEmail, userRegisterDTO.getEmail());
+		SysUser sysUser = baseMapper.selectOne(wrapper);
+		if (Objects.nonNull(sysUser)) {
+			result.setMessage("邮箱已注册！");
+			result.setSuccess(false);
+		}
+	}
+
+	/**
+	 * 校验用户名
+	 * @param userRegisterDTO
+	 * @param result
+	 */
+	private void checkUserName(UserRegisterDTO userRegisterDTO, Result<JSONObject> result) {
+		QueryWrapper<SysUser> wrapper = new QueryWrapper();
+		wrapper.lambda().eq(SysUser::getUsername, userRegisterDTO.getUsername());
+		SysUser sysUser = baseMapper.selectOne(wrapper);
+		if (Objects.nonNull(sysUser)) {
+			result.setMessage("用户名已存在！");
+			result.setSuccess(false);
+		}
+	}
+
+	@Override
+	public int activation(int userId, String activationCode) {
+		SysUser sysUser = baseMapper.selectById(userId);
+		if (sysUser.getStatus() == 1) {
+			return UserConstants.ACTIVATION_REPEAT;
+		} else if (sysUser.getActivationCode().equals(activationCode)) {
+			baseMapper.update(sysUser, new UpdateWrapper<SysUser>().lambda().set(SysUser::getStatus, 1));
+			return UserConstants.ACTIVATION_SUCCESS;
+		}
+		return UserConstants.ACTIVATION_FAILURE;
+	}
 }
