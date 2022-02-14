@@ -655,6 +655,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Override
 	public int activation(int userId, String activationCode) {
 		SysUser sysUser = baseMapper.selectById(userId);
+		Objects.requireNonNull(sysUser,"用户不存在！");
 		if (sysUser.getStatus() == 1) {
 			return UserConstants.ACTIVATION_REPEAT;
 		} else if (sysUser.getActivationCode().equals(activationCode)) {
