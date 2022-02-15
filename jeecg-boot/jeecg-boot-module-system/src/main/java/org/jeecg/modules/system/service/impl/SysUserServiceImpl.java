@@ -19,10 +19,7 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
-import org.jeecg.common.util.MD5Util;
-import org.jeecg.common.util.PasswordUtil;
-import org.jeecg.common.util.UUIDGenerator;
-import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.*;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.constant.UserConstants;
 import org.jeecg.modules.system.dto.UserRegisterDTO;
@@ -86,6 +83,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 	@Resource
 	private MailClient mailClient;
+
+	@Resource
+	private RedisUtil redisUtil;
 
 	/**
 	 * 域名
@@ -587,8 +587,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 	private void registerUser(UserRegisterDTO userRegisterDTO) {
 		SysUser sysUser = createUser(userRegisterDTO);
+		saveActivationCodeInRedis(sysUser);
 		sendMessage(sysUser);
 	}
+
+	private void saveActivationCodeInRedis(SysUser sysUser) {
+		String activationCode = sysUser.getActivationCode();
+		//十分钟过期
+		redisUtil.set(sysUser.getId(),activationCode,600);
+	}
+
 
 	/**
 	 * 发送消息
@@ -655,6 +663,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 	@Override
 	public int activation(int userId, String activationCode) {
+		Object redisActivationCode = redisUtil.get(String.valueOf(userId));
+		Objects.requireNonNull(redisActivationCode,"验证码已过期！");
 		SysUser sysUser = baseMapper.selectById(userId);
 		Objects.requireNonNull(sysUser,"用户不存在！");
 		if (sysUser.getStatus() == 1) {
