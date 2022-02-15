@@ -663,10 +663,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 	@Override
 	public int activation(int userId, String activationCode) {
-		Object redisActivationCode = redisUtil.get(String.valueOf(userId));
-		Objects.requireNonNull(redisActivationCode,"验证码已过期！");
-		SysUser sysUser = baseMapper.selectById(userId);
-		Objects.requireNonNull(sysUser,"用户不存在！");
+		SysUser sysUser = new SysUser();
+		checkActivation(userId);
+		checkUser(userId, sysUser);
+		activation(sysUser,activationCode);
+		return activation(sysUser,activationCode);
+	}
+
+	private int activation(SysUser sysUser, String activationCode) {
 		if (sysUser.getStatus() == 1) {
 			return UserConstants.ACTIVATION_REPEAT;
 		} else if (sysUser.getActivationCode().equals(activationCode)) {
@@ -674,5 +678,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			return UserConstants.ACTIVATION_SUCCESS;
 		}
 		return UserConstants.ACTIVATION_FAILURE;
+	}
+
+	private SysUser checkUser(int userId, SysUser sysUser) {
+		sysUser = baseMapper.selectById(userId);
+		Objects.requireNonNull(sysUser, "用户不存在！");
+		return sysUser;
+	}
+
+	private void checkActivation(int userId) {
+		Object redisActivationCode = redisUtil.get(String.valueOf(userId));
+		Objects.requireNonNull(redisActivationCode, "验证码已过期！");
 	}
 }
