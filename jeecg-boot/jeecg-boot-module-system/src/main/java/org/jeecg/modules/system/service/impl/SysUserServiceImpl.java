@@ -666,7 +666,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		SysUser sysUser = new SysUser();
 		checkActivation(userId);
 		checkUser(userId, sysUser);
-		activation(sysUser,activationCode);
 		return activation(sysUser,activationCode);
 	}
 
