@@ -596,8 +596,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 * @param sysUser
 	 */
 	private void sendMessage(SysUser sysUser) {
-		String url = domain + contextPath + "/sys/user/activation/" + sysUser.getId() + "/" + sysUser.getActivationCode();
-		mailClient.sendMail(sysUser.getEmail(), "激活账号", url);
+//		String url = domain + contextPath + "/sys/user/activation/" + sysUser.getId() + "/" + sysUser.getActivationCode();
+		String activationCode = sysUser.getActivationCode();
+		mailClient.sendMail(sysUser.getEmail(), "激活账号验证码", activationCode);
 	}
 
 	private SysUser createUser(UserRegisterDTO userRegisterDTO) {
