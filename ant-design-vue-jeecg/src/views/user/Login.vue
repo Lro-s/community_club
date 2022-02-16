@@ -28,9 +28,9 @@
 
     </a-form-model>
 
-    <two-step-captcha v-if="requiredTwoStepCaptcha" :visible="stepCaptchaVisible" @success="stepCaptchaSuccess" @cancel="stepCaptchaCancel"></two-step-captcha>
+<!--    <two-step-captcha v-if="requiredTwoStepCaptcha" :visible="stepCaptchaVisible" @success="stepCaptchaSuccess" @cancel="stepCaptchaCancel"></two-step-captcha>-->
     <login-select-tenant ref="loginSelect" @success="loginSelectOk"></login-select-tenant>
-    <third-login ref="thirdLogin"></third-login>
+
   </div>
 </template>
 

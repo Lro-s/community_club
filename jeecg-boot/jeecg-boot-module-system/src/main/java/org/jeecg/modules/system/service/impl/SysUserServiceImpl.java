@@ -573,7 +573,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Transactional
 	public Result<JSONObject> emailRegister(UserRegisterDTO userRegisterDTO) {
 		Result<JSONObject> result = new Result<>();
+		//校驗前端傳值
 		checkRegisterInfo(userRegisterDTO,result);
+		//註冊用戶邏輯
 		registerUser(userRegisterDTO);
 		result.setMessage("操作成功！");
 		result.setSuccess(true);
@@ -581,12 +583,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	}
 
 	private void checkRegisterInfo(UserRegisterDTO userRegisterDTO, Result<JSONObject> result) {
+		//校驗用戶名是否已存在
 		checkUserName(userRegisterDTO, result);
+		//校驗郵箱是否已存在
 		checkEmail(userRegisterDTO, result);
 	}
 
 	private void registerUser(UserRegisterDTO userRegisterDTO) {
+		//創建用戶
 		SysUser sysUser = createUser(userRegisterDTO);
+		//發送郵件
 		sendMessage(sysUser);
 	}
 

@@ -869,7 +869,11 @@ public class SysUserController {
         return result;
     }
 
-
+    /**
+     * 郵箱註冊新接口
+     * @param userRegisterDTO
+     * @return
+     */
     @PostMapping("/emailRegister")
     public Result<JSONObject> userEmailRegister(@RequestBody UserRegisterDTO userRegisterDTO) {
         return sysUserService.emailRegister(userRegisterDTO);
@@ -877,7 +881,7 @@ public class SysUserController {
 
 
 	/**
-	 * 用户注册接口
+	 * 用户注册接口 老接口
 	 * 
 	 * @param jsonObject
 	 * @param user

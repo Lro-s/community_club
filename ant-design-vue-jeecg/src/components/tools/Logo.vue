@@ -3,11 +3,11 @@
     <router-link :to="routerLinkTo">
 
       <!-- update-begin- author:sunjianlei --- date:20190814 --- for: logo颜色根据主题颜色变化 -->
-      <img v-if="navTheme === 'dark'" src="~@/assets/logo-white.png" alt="logo">
-      <img v-else src="~@/assets/logo.svg" alt="logo">
+      <img v-if="navTheme === 'dark'" src="~@/assets/logo.png" alt="logo">
+      <img v-else src="~@/assets/logo.png" alt="logo">
       <!-- update-begin- author:sunjianlei --- date:20190814 --- for: logo颜色根据主题颜色变化 -->
 
-      <h1 v-if="showTitle">{{ title }}</h1>
+      <span v-if="showTitle">{{ title }}</span>
     </router-link>
   </div>
 </template>
@@ -21,7 +21,7 @@
     props: {
       title: {
         type: String,
-        default: 'Jeecg-Boot Pro',
+        default: '学生社团推荐系统',
         required: false
       },
       showTitle: {
@@ -32,7 +32,7 @@
       // 点击Logo跳转地址
       routerLinkTo: {
         type: Object,
-        default: () => ({name: 'dashboard'}),
+        default: () => ({name: '/dashboard/analysis'})
       },
     }
   }

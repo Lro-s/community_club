@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  * @Author xiaomai
- * @Description
+ * @Description 前端傳值
  * @Date 2022/2/14 16:44
  **/
 @Data
@@ -35,7 +35,7 @@ public class UserRegisterDTO {
     private String password;
 
     /**
-     * 盐值
+     * 盐值 後台內部生成
      */
     private String salt;
 
