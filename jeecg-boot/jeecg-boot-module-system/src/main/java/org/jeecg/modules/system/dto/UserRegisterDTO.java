@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,7 @@ public class UserRegisterDTO {
     /**
      * 盐值 後台內部生成
      */
+    @JsonIgnore
     private String salt;
 
     /**
