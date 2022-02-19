@@ -25,16 +25,17 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
   mail:
-    host: smtp.163.com
-    username: jeecgos@163.com
-    password: ??
+    host: smtp.sina.com
+    port: 465
+    protocol: smtps
+    username: wx13710072053@sina.com
+    password: cf1a73ad1089cdca
+    default-encoding: UTF-8
+    test-connection: false
     properties:
       mail:
         smtp:
           auth: true
-          starttls:
-            enable: true
-            required: true
   ## quartz定时任务,采用数据库方式
   quartz:
     job-store-type: jdbc
@@ -133,7 +134,7 @@ spring:
         master:
           url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
-          password: root
+          password: 123456
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
