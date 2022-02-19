@@ -2,6 +2,7 @@ package org.jeecg.modules.system.service.impl;
 import java.util.Date;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -611,12 +612,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 	private SysUser createUser(UserRegisterDTO userRegisterDTO) {
 		SysUser sysUser = new SysUser();
+		sysUser.setEmail(userRegisterDTO.getEmail());
+		sysUser.setUsername(userRegisterDTO.getUsername());
 		//生成5位的随机数作为盐值
 		sysUser.setSalt(CommonUtil.generateUUID().substring(0, 5));
 		//密码盐值加密
 		sysUser.setPassword(CommonUtil.md5(userRegisterDTO.getPassword()+userRegisterDTO.getSalt()));
 		//发送随机字符串作为激活码
-		userRegisterDTO.setActivationCode(IdUtil.fastUUID());
+		sysUser.setActivationCode(IdUtil.fastUUID());
 		//设置随机头像  这里使用牛客网的随机头像
 		sysUser.setAvatar(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
 		//设置账号默认为冻结状态
@@ -638,7 +641,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 */
 	private void checkEmail(UserRegisterDTO userRegisterDTO, Result<JSONObject> result) {
 		QueryWrapper<SysUser> wrapper = new QueryWrapper();
-		wrapper.lambda().eq(SysUser::getEmail, userRegisterDTO.getEmail());
+		wrapper.eq("email", userRegisterDTO.getEmail());
 		SysUser sysUser = baseMapper.selectOne(wrapper);
 		if (Objects.nonNull(sysUser)) {
 			result.setMessage("邮箱已注册！");
@@ -653,9 +656,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 */
 	private void checkUserName(UserRegisterDTO userRegisterDTO, Result<JSONObject> result) {
 		QueryWrapper<SysUser> wrapper = new QueryWrapper();
-		wrapper.lambda().eq(SysUser::getUsername, userRegisterDTO.getUsername());
-		SysUser sysUser = baseMapper.selectOne(wrapper);
-		if (Objects.nonNull(sysUser)) {
+		wrapper.eq("username", userRegisterDTO.getUsername());
+		List<SysUser> sysUserList = baseMapper.selectList(wrapper);
+		if (CollectionUtil.isNotEmpty(sysUserList)) {
 			result.setMessage("用户名已存在！");
 			result.setSuccess(false);
 		}
