@@ -292,7 +292,6 @@ public class SysUserController {
                 result.setMessage("用户账号已存在");
                 return result;
             }
-
         } catch (Exception e) {
             result.setSuccess(false);
             result.setMessage(e.getMessage());
@@ -301,6 +300,32 @@ public class SysUserController {
         result.setSuccess(true);
         return result;
     }
+
+    @RequestMapping(value = "/checkOnlyEmail", method = RequestMethod.GET)
+    public Result<Boolean> checkOnlyEmail(SysUser sysUser) {
+        Result<Boolean> result = new Result<>();
+        //如果此参数为false则程序发生异常
+        result.setResult(true);
+        sysUserService.getOne(new QueryWrapper<>(sysUser));
+        try {
+            //通过传入信息查询新的用户信息
+            sysUser.setPassword(null);
+            SysUser user = sysUserService.findByEmail(sysUser.getEmail());
+            if (Objects.nonNull(user)) {
+                result.setSuccess(false);
+                result.setMessage("邮箱已存在");
+                return result;
+            }
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setMessage(e.getMessage());
+            return result;
+        }
+        result.setSuccess(true);
+        return result;
+    }
+
+
 
     /**
      * 修改密码
@@ -965,7 +990,7 @@ public class SysUserController {
      * @return
      */
     @GetMapping("/activation/{userId}/{activationCode}")
-    public Result<JSONObject> activation(@PathVariable("userId") int userId, @PathVariable("activationCode") String activationCode) {
+    public Result<JSONObject> activation(@PathVariable("userId") String userId, @PathVariable("activationCode") String activationCode) {
         Result<JSONObject> result = new Result<>();
         int code = sysUserService.activation(userId, activationCode);
         if (code == UserConstants.ACTIVATION_SUCCESS) {

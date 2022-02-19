@@ -8,6 +8,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -17,6 +18,7 @@ import java.net.UnknownHostException;
 */
 @Slf4j
 @SpringBootApplication
+@EnableAsync
 public class JeecgSystemApplication extends SpringBootServletInitializer {
 
     @Override

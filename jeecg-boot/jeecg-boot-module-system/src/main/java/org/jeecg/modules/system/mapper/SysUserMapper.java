@@ -140,4 +140,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @return
 	 */
 	List<SysUser> queryByDepIds(@Param("departIds")List<String> departIds,@Param("username") String username);
+
+	SysUser selectByUserId(@Param("id")String userId);
+
+	void activationEmail(@Param("sysUser") SysUser sysUser);
 }

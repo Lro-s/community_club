@@ -262,5 +262,7 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param activationCode
 	 * @return
 	 */
-    int activation(int userId, String activationCode);
+    int activation(String userId, String activationCode);
+
+    SysUser findByEmail(String email);
 }

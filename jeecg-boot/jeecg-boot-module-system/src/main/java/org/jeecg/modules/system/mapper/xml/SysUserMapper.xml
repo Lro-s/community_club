@@ -162,4 +162,17 @@
 			and username != #{username}
 		</if>
 	</select>
+
+	<select id="selectByUserId"  resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from sys_user where id = #{id}
+	</select>
+
+	<update id="activationEmail">
+		update sys_user
+		set
+		status = 1,
+		del_flag = 0
+		where
+		id = #{sysUser.id}
+	</update>
 </mapper>
