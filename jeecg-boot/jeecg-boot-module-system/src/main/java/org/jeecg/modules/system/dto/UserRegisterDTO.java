@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+//用户类 来注册用户的信息
 public class UserRegisterDTO {
 
     /**

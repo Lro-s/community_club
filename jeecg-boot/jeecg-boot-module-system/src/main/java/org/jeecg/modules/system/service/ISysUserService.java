@@ -254,6 +254,7 @@ public interface ISysUserService extends IService<SysUser> {
 	/** userId转为username */
 	List<String> userIdToUsername(Collection<String> userIdList);
 
+	//申请这个接口类
     Result<JSONObject> emailRegister(UserRegisterDTO userRegisterDTO);
 
 	/**
@@ -265,4 +266,6 @@ public interface ISysUserService extends IService<SysUser> {
     int activation(String userId, String activationCode);
 
     SysUser findByEmail(String email);
+
+	Boolean publishEvent1(SysUser sysUser,String captcha);
 }

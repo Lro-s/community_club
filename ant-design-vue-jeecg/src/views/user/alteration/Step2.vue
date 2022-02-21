@@ -1,32 +1,36 @@
 <template>
   <div>
     <a-form-model ref="form" :model="model" :rules="validatorRules" class="password-retrieval-form" @keyup.enter.native="nextStep">
-      <a-form-model-item label="手机" required prop="phone" :labelCol="{span: 5}" :wrapperCol="{span: 19}">
-        <a-row :gutter="16">
-          <a-col class="gutter-row" :span="20">
-            <a-input v-model="model.phone" type="text" autocomplete="false" placeholder="请输入手机号">
-              <a-icon slot="prefix" type="phone" :style="{ color: 'rgba(0,0,0,.25)'}"/>
+
+      <a-row :gutter="16">
+        <a-col class="gutter-row" :span="20">
+      <a-form-model-item v-if="show" label="邮箱" required prop="email" :labelCol="{span: 5}" :wrapperCol="{span: 19}">
+            <a-input v-model="model.email" type="text" autocomplete="false" placeholder="请输入邮箱">
+              <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)'}"/>
             </a-input>
-          </a-col>
-        </a-row>
       </a-form-model-item>
-      <a-form-model-item v-if="show" required prop="captcha" label="验证码" :labelCol="{span: 5}" :wrapperCol="{span: 19}">
+        </a-col>
+      </a-row>
+
+      <a-form-model-item v-if="show" required prop="actcode" label="验证码" :labelCol="{span: 5}" :wrapperCol="{span: 19}">
         <a-row :gutter="16">
           <a-col class="gutter-row" :span="12">
-            <a-input v-model="model.captcha" type="text" placeholder="手机短信验证码">
+            <a-input v-model="model.actcode" type="text" placeholder="邮箱验证码">
               <a-icon slot="prefix" type="code" :style="{ color: 'rgba(0,0,0,.25)'}"/>
             </a-input>
           </a-col>
+
           <a-col class="gutter-row" :span="8">
             <a-button
               tabindex="-1"
               size="default"
               :disabled="state.smsSendBtn"
               @click.stop.prevent="getCaptcha"
-              v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"></a-button>
+              v-text="!state.smsSendBtn && '发送邮箱' || (state.time+' s')"></a-button>
           </a-col>
         </a-row>
       </a-form-model-item>
+
       <a-form-model-item :wrapperCol="{span: 19, offset: 5}">
         <router-link style="float: left;line-height: 40px;" :to="{ name: 'login' }">使用已有账户登录</router-link>
         <a-button type="primary" @click="nextStep" style="margin-left: 20px">下一步</a-button>
@@ -37,6 +41,7 @@
 
 <script>
   import {postAction} from '@/api/manage'
+  import {checkOnlyEmail} from "@api/api";
 
   export default {
     name: "Step2",
@@ -54,16 +59,16 @@
           smsSendBtn: false,
         },
         formLogin: {
-          captcha: "",
-          mobile: "",
+          actcode: "",
+          email: "",
         },
         validatorRules: {
-          phone: [
-            { required: true, message: '请输入手机号码!' },
-            { validator: this.validatePhone }
+          email: [
+            { required: true, message: '请输入邮箱!' },
+            { validator: this.validateEmail }
           ],
-          captcha: [
-            { required: true, message: '请输入短信验证码!' }
+          actcode: [
+            { required: true, message: '请输入邮箱验证码!' }
           ]
         },
       }
@@ -77,16 +82,16 @@
         this.$refs['form'].validate((success) => {
           if(success==true){
             let params = {
-              phone: this.model.phone,
-              smscode: this.model.captcha
+              email: this.model.email,
+              actcode: this.model.actcode
             }
-            postAction("/sys/user/phoneVerification", params).then((res) => {
+            postAction("/sys/user/EmailVerification", params).then((res) => {
               if (res.success) {
                 console.log(res);
                 let userList = {
                   username: res.result.username,
-                  phone: params.phone,
-                  smscode: res.result.smscode
+                  email: params.email,
+                  actcode: res.result.actcode
                 };
                 setTimeout(function () {
                   that.$emit('nextStep', userList)
@@ -102,7 +107,7 @@
       getCaptcha(e) {
         e.preventDefault();
         const that = this
-        that.$refs['form'].validateField('phone', err=>{
+        that.$refs['form'].validateField('email', err=>{
           if(!err){
             that.state.smsSendBtn = true;
             let interval = window.setInterval(() => {
@@ -113,11 +118,11 @@
               }
             }, 1000);
             const hide = that.$message.loading('验证码发送中..', 0);
-            let smsParams = {
-              mobile: that.model.phone,
-              smsmode: "2"
+            let Params = {
+              email: that.model.email,
+              actcode: "2"
             };
-            postAction("/sys/sms", smsParams).then(res => {
+            postAction("/sys/actcode", Params).then(res => {
               if (!res.success) {
                 setTimeout(hide, 1);
                 that.cmsFailed(res.message);
@@ -147,18 +152,24 @@
           that.show = false;
         }
       },
-      validatePhone(rule,value,callback){
-          if(value){
-            var myreg=/^[1][3,4,5,7,8][0-9]{9}$/;
-            if(!myreg.test(value)){
-              callback("请输入正确的手机号")
-            }else{
-              callback();
+      validateEmail(rule, value, callback) {
+        var reg= /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+        if(!reg.test(value)){
+          callback(new Error("请输入正确邮箱"))
+        }else{
+          var params = {
+            email: value,
+          };
+          checkOnlyEmail(params).then((res) => {
+            if (res.success) {
+              callback(邮箱不存在,请先注册)
+            } else {
+              callback()
             }
-          }else{
-            callback()
-          }
+          })
+        }
       }
+
     }
 
   }

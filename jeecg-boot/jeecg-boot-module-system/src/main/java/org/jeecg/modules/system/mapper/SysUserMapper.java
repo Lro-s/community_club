@@ -144,4 +144,6 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	SysUser selectByUserId(@Param("id")String userId);
 
 	void activationEmail(@Param("sysUser") SysUser sysUser);
+
+	SysUser findUserByEmail(@Param("email") String email);
 }

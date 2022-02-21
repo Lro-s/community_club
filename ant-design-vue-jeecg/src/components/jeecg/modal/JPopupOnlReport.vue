@@ -339,7 +339,7 @@
         this.close()
       },
       handleSubmit() {
-        if(!this.multi){
+        if(this.multi){
           if(this.table.selectionRows && this.table.selectionRows.length>1){
             this.$message.warning("请选择一条记录")
             return false

@@ -59,8 +59,8 @@
             let params = {
               username: that.userList.username,
               password: that.model.password,
-              smscode: that.userList.smscode,
-              phone: that.userList.phone,
+              actcode: that.userList.actcode,
+              email: that.userList.email,
             }
             getAction("/sys/user/passwordChange", params).then((res) => {
               if (res.success) {

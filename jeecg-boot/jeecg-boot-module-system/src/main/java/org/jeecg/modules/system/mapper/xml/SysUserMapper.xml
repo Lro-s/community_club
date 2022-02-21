@@ -175,4 +175,10 @@
 		where
 		id = #{sysUser.id}
 	</update>
+
+	<select id="findUserByEmail" resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from sys_user where email=#{email}
+	</select>
+
+
 </mapper>

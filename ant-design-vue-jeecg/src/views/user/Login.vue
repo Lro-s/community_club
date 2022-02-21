@@ -6,9 +6,6 @@
           <login-account ref="alogin" @validateFail="validateFail" @success="requestSuccess" @fail="requestFailed"></login-account>
         </a-tab-pane>
 
-        <a-tab-pane key="tab2" tab="手机号登录">
-          <login-phone ref="plogin" @validateFail="validateFail" @success="requestSuccess" @fail="requestFailed"></login-phone>
-        </a-tab-pane>
       </a-tabs>
 
       <a-form-model-item>
@@ -44,7 +41,7 @@ import { getEncryptedString } from '@/utils/encryption/aesEncrypt'
 import { timeFix } from '@/utils/util'
 
 import LoginAccount from './LoginAccount'
-import LoginPhone from './LoginPhone'
+
 
 export default {
     components: {
@@ -52,7 +49,6 @@ export default {
       TwoStepCaptcha,
       ThirdLogin,
       LoginAccount,
-      LoginPhone
     },
     data () {
       return {

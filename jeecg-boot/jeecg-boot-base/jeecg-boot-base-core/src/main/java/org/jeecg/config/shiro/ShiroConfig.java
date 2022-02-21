@@ -71,6 +71,7 @@ public class ShiroConfig {
             }
         }
         // 配置不会被拦截的链接 顺序判断
+        filterChainDefinitionMap.put("/sys/user/**", "anon"); //cas验证登录
         filterChainDefinitionMap.put("/sys/cas/client/validateLogin", "anon"); //cas验证登录
         filterChainDefinitionMap.put("/sys/randomImage/**", "anon"); //登录验证码接口排除
         filterChainDefinitionMap.put("/sys/checkCaptcha", "anon"); //登录验证码接口排除
@@ -80,8 +81,12 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/sys/thirdLogin/**", "anon"); //第三方登录
         filterChainDefinitionMap.put("/sys/getEncryptedString", "anon"); //获取加密串
         filterChainDefinitionMap.put("/sys/sms", "anon");//短信验证码
+        filterChainDefinitionMap.put("/sys/actcode", "anon");//短信验证码
         filterChainDefinitionMap.put("/sys/phoneLogin", "anon");//手机登录
         filterChainDefinitionMap.put("/sys/user/checkOnlyUser", "anon");//校验用户是否存在
+        filterChainDefinitionMap.put("/activation/{userId}/{activationCode}", "anon");//激活邮箱
+        filterChainDefinitionMap.put("/emailRegister", "anon");//邮箱注册
+        filterChainDefinitionMap.put("/sys/user/checkOnlyEmail", "anon");//校验用户邮箱是否存在
         filterChainDefinitionMap.put("/sys/user/register", "anon");//用户注册
         filterChainDefinitionMap.put("/sys/user/emailRegister","anon");//用户邮箱注册
         filterChainDefinitionMap.put("/sys/user/phoneVerification", "anon");//用户忘记密码验证手机号

@@ -5,6 +5,8 @@ package org.jeecg.modules.system.constant;
  * @Description
  * @Date 2022/2/14 17:16
  **/
+
+//常用类
 public class UserConstants {
 
     /**

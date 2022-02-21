@@ -301,6 +301,7 @@ public class SysUserController {
         return result;
     }
 
+
     @RequestMapping(value = "/checkOnlyEmail", method = RequestMethod.GET)
     public Result<Boolean> checkOnlyEmail(SysUser sysUser) {
         Result<Boolean> result = new Result<>();
@@ -1071,35 +1072,72 @@ public class SysUserController {
 		result.setSuccess(true);
 		return result;
 	}
+
+    /**
+     *  int resetCode = (int) (Math.random() * 9 + 1) * 100000;
+     *         redisUtil.set(email,resetCode,600);
+     */
+
+    /**
+     * 用户邮箱号，邮箱验证码验证
+     */
+    @PostMapping("/EmailVerification")
+    public Result<Map<String,String>> EmailVerification(@RequestBody JSONObject jsonObject) {
+        Result<Map<String,String>> result = new Result<Map<String,String>>();
+        //1. 从前端获取验证码，和邮箱
+        String actcode = jsonObject.getString("actcode");
+        String email = jsonObject.getString("email");
+        //2. 从redis中获取发送的验证码
+        Object code = redisUtil.get(email);
+        //3. 校验验证码是否正确
+        if (!actcode.equals(code)) {
+            result.setMessage("邮箱验证码错误");
+            result.setSuccess(false);
+            return result;
+        }
+        //4.设置有效时间
+        redisUtil.set(email, actcode,600);
+        //5.新增查询用户名，通过邮箱将用户信息查出来
+        LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
+        query.eq(SysUser::getEmail,email);
+        SysUser user = sysUserService.getOne(query);
+        //6.将查到的用户信息返回给前端
+        Map<String,String> map = new HashMap<>();
+        map.put("actcode",actcode);
+        map.put("username",user.getUsername());
+        result.setResult(map);
+        result.setSuccess(true);
+        return result;
+    }
 	
 	/**
-	 * 用户更改密码
+	 * 用户更改密码 用到用户名、密码、验证码、邮箱
 	 */
 	@GetMapping("/passwordChange")
 	public Result<SysUser> passwordChange(@RequestParam(name="username")String username,
 										  @RequestParam(name="password")String password,
-			                              @RequestParam(name="smscode")String smscode,
-			                              @RequestParam(name="phone") String phone) {
+			                              @RequestParam(name="actcode")String actcode,
+			                              @RequestParam(name="email") String email) {
         Result<SysUser> result = new Result<SysUser>();
-        if(oConvertUtils.isEmpty(username) || oConvertUtils.isEmpty(password) || oConvertUtils.isEmpty(smscode)  || oConvertUtils.isEmpty(phone) ) {
+        if(oConvertUtils.isEmpty(username) || oConvertUtils.isEmpty(password) || oConvertUtils.isEmpty(actcode)  || oConvertUtils.isEmpty(email) ) {
             result.setMessage("重置密码失败！");
             result.setSuccess(false);
             return result;
         }
 
         SysUser sysUser=new SysUser();
-        Object object= redisUtil.get(phone);
+        Object object= redisUtil.get(email);
         if(null==object) {
-        	result.setMessage("短信验证码失效！");
+        	result.setMessage("邮箱验证码失效！");
             result.setSuccess(false);
             return result;
         }
-        if(!smscode.equals(object.toString())) {
-        	result.setMessage("短信验证码不匹配！");
+        if(!actcode.equals(object.toString())) {
+        	result.setMessage("邮箱验证码不匹配！");
             result.setSuccess(false);
             return result;
         }
-        sysUser = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername,username).eq(SysUser::getPhone,phone));
+        sysUser = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername,username).eq(SysUser::getEmail,email));
         if (sysUser == null) {
             result.setMessage("未找到用户！");
             result.setSuccess(false);

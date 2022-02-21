@@ -582,6 +582,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return userList.stream().map(SysUser::getUsername).collect(Collectors.toList());
     }
 
+    //实现邮箱注册接口类
     @Override
     @Transactional
     public Result<JSONObject> emailRegister(UserRegisterDTO userRegisterDTO) {
@@ -602,6 +603,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         checkEmail(userRegisterDTO, result);
     }
 
+    //注册用户
     private void registerUser(UserRegisterDTO userRegisterDTO) {
         SysUser sysUser = null;
         try {
@@ -618,6 +620,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     }
 
+    //邮箱内容
     private void publishEvent(SysUser sysUser) {
         Map<String,Object> map = new HashMap<>();
         String url = domain + contextPath + "/sys/user/activation/" + sysUser.getId() + "/" + sysUser.getActivationCode();
@@ -632,6 +635,26 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         map.put("subject","激活账号链接");
         map.put("content",content + turn + htmlUrl);
         applicationContext.publishEvent(new SendActivationMailEvent(map));
+    }
+
+
+
+
+    //邮箱内容 忘记密码发送邮箱验证码的
+    public Boolean publishEvent1(SysUser sysUser,String captcha) {
+        Map<String,Object> map = new HashMap<>();
+
+        String username = sysUser.getUsername();
+
+        String content = "亲爱的 " + username + " 你好，你的验证码为";
+        String turn = "<br/>";
+
+        map.put("email",sysUser.getEmail());
+        map.put("subject","更改账号密码");
+        map.put("content",content + turn + captcha);
+        applicationContext.publishEvent(new SendActivationMailEvent(map));
+        return true;
+
     }
 
     private void saveActivationCodeInRedis(SysUser sysUser) {
@@ -657,14 +680,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         mailClient.sendMail(sysUser.getEmail(), "激活账号链接", content + turn + htmlUrl);
     }
 
+    //新增用户方法
     private SysUser createUser(UserRegisterDTO userRegisterDTO) {
         SysUser sysUser = new SysUser();
         sysUser.setEmail(userRegisterDTO.getEmail());
         sysUser.setUsername(userRegisterDTO.getUsername());
+        String salt = oConvertUtils.randomGen(8);
+        String passwordEncode = PasswordUtil.encrypt(userRegisterDTO.getUsername(), userRegisterDTO.getPassword(), salt);
         //生成5位的随机数作为盐值
-        sysUser.setSalt(CommonUtil.generateUUID().substring(0, 5));
+        sysUser.setSalt(salt);
         //密码盐值加密
-        sysUser.setPassword(CommonUtil.md5(userRegisterDTO.getPassword() + userRegisterDTO.getSalt()));
+        sysUser.setPassword(passwordEncode);
         //发送随机字符串作为激活码
         sysUser.setActivationCode(IdUtil.fastUUID());
         //设置随机头像  这里使用牛客网的随机头像
@@ -721,7 +747,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     private int activation(SysUser sysUser, String activationCode) {
-        if (sysUser.getActivationCode().equals(activationCode)) {
+        if (Objects.nonNull(sysUser.getStatus()) & sysUser.getStatus() == 1) {
+            return UserConstants.ACTIVATION_REPEAT;
+        }else if (sysUser.getActivationCode().equals(activationCode)) {
             baseMapper.activationEmail(sysUser);
 //			baseMapper.update(sysUser,new UpdateWrapper<SysUser>()
 //					.lambda()
@@ -730,8 +758,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 //					.eq(SysUser::getId,sysUser.getId()) );
             baseMapper.activationEmail(sysUser);
             return UserConstants.ACTIVATION_SUCCESS;
-        } else if (Objects.nonNull(sysUser.getStatus()) & sysUser.getStatus() == 1) {
-            return UserConstants.ACTIVATION_REPEAT;
         }
         return UserConstants.ACTIVATION_FAILURE;
     }
@@ -749,9 +775,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public SysUser findByEmail(String email) {
-        QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(SysUser::getEmail, email);
-        SysUser sysUser = baseMapper.selectOne(wrapper);
+        SysUser sysUser = baseMapper.findUserByEmail(email);
         return sysUser;
     }
+
 }

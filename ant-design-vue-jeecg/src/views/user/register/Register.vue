@@ -1,6 +1,6 @@
 <template>
   <div class="main user-layout-register">
-    <h3><span>注册</span></h3>
+    <h3 class="juzhong">注册</h3>
     <a-form-model ref="form" :model="model" :rules="validatorRules">
       <a-form-model-item prop="username">
         <a-input v-model="model.username" size="large" type="text" autocomplete="false" placeholder="请输入用户名"/>
@@ -32,39 +32,25 @@
         <a-input v-model="model.password2" size="large" type="password" autocomplete="false" placeholder="确认密码"></a-input>
       </a-form-model-item>
 
-      <a-form-model-item prop="mobile">
-        <a-input v-model="model.mobile" size="large" placeholder="11 位手机号">
-          <a-select slot="addonBefore" size="large" defaultValue="+86">
-            <a-select-option value="+86">+86</a-select-option>
-            <a-select-option value="+87">+87</a-select-option>
-          </a-select>
+      <a-row :gutter="16">
+      <a-col class="gutter-row" :span="16">
+      <a-form-model-item prop="email">
+        <a-input v-model="model.email" size="large" placeholder="请输入邮箱">
+          <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
         </a-input>
       </a-form-model-item>
-      <!--<a-input-group size="large" compact>
-            <a-select style="width: 20%" size="large" defaultValue="+86">
-              <a-select-option value="+86">+86</a-select-option>
-              <a-select-option value="+87">+87</a-select-option>
-            </a-select>
-            <a-input style="width: 80%" size="large" placeholder="11 位手机号"></a-input>
-          </a-input-group>-->
+      </a-col>
 
-      <a-row :gutter="16">
-        <a-col class="gutter-row" :span="16">
-          <a-form-model-item prop="captcha">
-            <a-input v-model="model.captcha" size="large" type="text" placeholder="验证码">
-              <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-            </a-input>
-          </a-form-model-item>
-        </a-col>
-        <a-col class="gutter-row" :span="8">
-          <a-button
-            class="getCaptcha"
-            size="large"
-            :disabled="state.smsSendBtn"
-            @click.stop.prevent="getCaptcha"
-            v-text="!state.smsSendBtn && '获取验证码'||(state.time+' s')"></a-button>
-        </a-col>
+      <a-col class="gutter-row" :span="8">
+        <a-button
+          class="getCaptcha"
+          size="large"
+          :disabled="state.smsSendBtn"
+          @click.stop.prevent="getCaptcha"
+          v-text="!state.smsSendBtn && '发送邮箱'||(state.time+' s')"></a-button>
+      </a-col>
       </a-row>
+
 
       <a-form-model-item>
         <a-button
@@ -87,7 +73,8 @@
   import {mixinDevice} from '@/utils/mixin.js'
   import {getSmsCaptcha} from '@/api/login'
   import {getAction, postAction} from '@/api/manage'
-  import {checkOnlyUser} from '@/api/api'
+  import {checkOnlyUser,checkOnlyEmail} from '@/api/api'
+
 
   const levelNames = {
     0: '低',
@@ -127,9 +114,9 @@
             { required: false },
             { validator: this.handlePasswordCheck }
           ],
-          mobile: [
+          email: [
             { required: false },
-            { validator: this.handlePhoneCheck }
+            { validator: this.handleEmailCheck }
           ],
           captcha: [
             { required: false },
@@ -167,25 +154,31 @@
           username: value,
         };
         checkOnlyUser(params).then((res) => {
+          console.log(res)
           if (res.success) {
             callback()
           } else {
-            callback("用户名已存在!")
+            callback("用户名已存在,请直接登录!")
           }
         })
       }
     },
       handleEmailCheck(rule, value, callback) {
-        let params = {
-          email: value,
-        };
-        checkOnlyUser(params).then((res) => {
-          if (res.success) {
-            callback()
-          } else {
-            callback("邮箱已存在!")
-          }
-        })
+        var reg= /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+        if(!reg.test(value)){
+          callback(new Error("请输入正确邮箱"))
+        }else{
+          var params = {
+            email: value,
+          };
+          checkOnlyEmail(params).then((res) => {
+            if (res.success) {
+              callback()
+            } else {
+              callback("邮箱已存在!")
+            }
+          })
+        }
       },
       handlePasswordLevel(rule, value, callback) {
         let level = 0
@@ -238,24 +231,6 @@
           callback();
         }
       },
-      handlePhoneCheck(rule, value, callback) {
-        var reg=/^1[3456789]\d{9}$/
-        if(!reg.test(value)){
-          callback(new Error("请输入正确手机号"))
-        }else{
-        var params = {
-          phone: value,
-        };
-        checkOnlyUser(params).then((res) => {
-          if (res.success) {
-            callback()
-          } else {
-            callback("手机号已存在!")
-          }
-        })
-      }
-    },
-
       handlePasswordInputClick() {
         if (!this.isMobile()) {
           this.state.passwordLevelChecked = true
@@ -269,12 +244,11 @@
           if (success==true) {
             let values = this.model
             let register = {
+              email: values.email,
               username: values.username,
-              password: values.password,
-              phone: values.mobile,
-              smscode: values.captcha
+              password: values.password
             };
-            postAction("/sys/user/register", register).then((res) => {
+            postAction("/sys/user/emailRegister", register).then((res) => {
               if (!res.success) {
                 this.registerFailed(res.message)
               } else {
@@ -283,42 +257,6 @@
             })
           }
         })
-      },
-
-      getCaptcha(e) {
-        e.preventDefault()
-        let that = this
-        this.$refs['form'].validateField(['mobile'], (err) => {
-            if (!err) {
-              this.state.smsSendBtn = true;
-              let interval = window.setInterval(() => {
-                if (that.state.time-- <= 0) {
-                  that.state.time = 60;
-                  that.state.smsSendBtn = false;
-                  window.clearInterval(interval);
-                }
-              }, 1000);
-              const hide = this.$message.loading('验证码发送中..', 3);
-              const params = {
-                mobile: this.model.mobile,
-                smsmode: "1"
-              };
-              postAction("/sys/sms", params).then((res) => {
-                if (!res.success) {
-                  this.registerFailed(res.message);
-                  setTimeout(hide, 0);
-                }
-                setTimeout(hide, 500);
-              }).catch(err => {
-                setTimeout(hide, 1);
-                clearInterval(interval);
-                that.state.time = 60;
-                that.state.smsSendBtn = false;
-                this.requestFailed(err);
-              });
-            }
-          }
-        );
       },
       registerFailed(message) {
         this.$notification['error']({
@@ -389,6 +327,11 @@
     .login {
       float: right;
       line-height: 40px;
+    }
+
+    .juzhong{
+      text-align: center;
+      font-weight: bold;
     }
   }
 </style>

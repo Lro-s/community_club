@@ -16,6 +16,9 @@ const getUserList = (params)=>getAction("/sys/user/list",params);
 const frozenBatch = (params)=>putAction("/sys/user/frozenBatch",params);
 //验证用户是否存在
 const checkOnlyUser = (params)=>getAction("/sys/user/checkOnlyUser",params);
+//验证邮箱是否存在
+const checkOnlyEmail = (params)=>getAction("/sys/user/checkOnlyEmail",params);
+
 //改变密码
 const changePassword = (params)=>putAction("/sys/user/changePassword",params);
 
@@ -157,7 +160,8 @@ export {
   saveDeptRolePermission,
   queryMyDepartTreeList,
   getUserNoticeInfo,
-  getDictItemsFromCache
+  getDictItemsFromCache,
+  checkOnlyEmail
 }
 
 

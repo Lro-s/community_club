@@ -334,6 +334,92 @@ public class LoginController {
 		}
 		return result;
 	}
+
+	/**
+	 * 邮箱接口验证
+	 *
+	 * @param jsonObject
+	 * @return
+	 */
+	@PostMapping(value = "/actcode")
+	public Result<String> actcode(@RequestBody JSONObject jsonObject) {
+		Result<String> result = new Result<String>();
+		String email = jsonObject.get("email").toString();
+		//手机号模式 登录模式: "2"  注册模式: "1"
+		String smsmode=jsonObject.get("actcode").toString();
+		log.info(email); //输出邮箱
+		if(oConvertUtils.isEmpty(email)){
+			result.setMessage("邮箱不允许为空！");
+			result.setSuccess(false);
+			return result;
+		}
+		Object object = redisUtil.get(email);
+		if (object != null) {
+			result.setMessage("验证码10分钟内，仍然有效！");
+			result.setSuccess(false);
+			return result;
+		}
+
+		//随机数
+		String captcha = RandomUtil.randomNumbers(6);
+		JSONObject obj = new JSONObject();
+		obj.put("code", captcha);
+		try {
+			boolean b = false;
+			//注册模板
+			if (CommonConstant.SMS_TPL_TYPE_1.equals(smsmode)) {
+				SysUser sysUser = sysUserService.getUserByEmail(email);
+				if(sysUser!=null) {
+					result.error500(" 邮箱已经注册，请直接登录！");
+					baseCommonService.addLog("邮箱已经注册，请直接登录！", CommonConstant.LOG_TYPE_1, null);
+					return result;
+				}
+//				b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.REGISTER_TEMPLATE_CODE);
+			}else {
+				//登录模式，校验用户有效性
+				SysUser sysUser = sysUserService.getUserByEmail(email);
+				result = sysUserService.checkUserIsEffective(sysUser);
+				if(!result.isSuccess()) {
+					String message = result.getMessage();
+					if("该用户不存在，请注册".equals(message)){
+						result.error500("该用户不存在或未绑定手机号");
+					}
+					return result;
+				}
+				/**
+				 * smsmode 短信模板方式  0 .登录模板、1.注册模板、2.忘记密码模板
+				 */
+				if (CommonConstant.SMS_TPL_TYPE_0.equals(smsmode)) {
+					//登录模板
+//					b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.LOGIN_TEMPLATE_CODE);
+				} else if(CommonConstant.SMS_TPL_TYPE_2.equals(smsmode)) {
+					//忘记密码模板
+//					b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.FORGET_PASSWORD_TEMPLATE_CODE);
+					b = sysUserService.publishEvent1(sysUser,captcha); //发送验证码
+				}
+			}
+
+			if (b == false) {
+				result.setMessage("邮箱验证码发送失败,请稍后重试");
+				result.setSuccess(false);
+				return result;
+			}
+			//验证码10分钟内有效
+			redisUtil.set(email, captcha, 600); // redis的设置
+			//update-begin--Author:scott  Date:20190812 for：issues#391
+			//result.setResult(captcha);
+			//update-end--Author:scott  Date:20190812 for：issues#391
+			result.setSuccess(true);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.error500(" 邮箱接口未配置，请联系管理员！");
+			return result;
+		}
+		return result;
+	}
+
+
 	
 
 	/**
