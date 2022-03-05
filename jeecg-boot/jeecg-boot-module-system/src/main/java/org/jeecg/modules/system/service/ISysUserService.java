@@ -222,11 +222,6 @@ public interface ISysUserService extends IService<SysUser> {
     @Transactional(rollbackFor = Exception.class)
     boolean updateNullPhoneEmail();
 
-	/**
-	 * 保存第三方用户信息
-	 * @param sysUser
-	 */
-	void saveThirdUser(SysUser sysUser);
 
 	/**
 	 * 根据部门Ids查询

@@ -40,51 +40,22 @@
           <a-input placeholder="请输入用户姓名" v-model="model.realname" />
         </a-form-model-item>
 
-        <a-form-model-item label="工号" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="workNo">
-          <a-input placeholder="请输入工号" v-model="model.workNo" />
-        </a-form-model-item>
-
-        <a-form-model-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-select-position placeholder="请选择职务" :multiple="false" v-model="model.post"/>
-        </a-form-model-item>
-
         <a-form-model-item label="角色分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!roleDisabled" >
-          <j-multi-select-tag
+          <a-select
             :disabled="disableSubmit"
             v-model="model.selectedroles"
             :options="rolesOptions"
             placeholder="请选择角色">
-          </j-multi-select-tag>
+          </a-select>
         </a-form-model-item>
 
-        <!--部门分配-->
-        <a-form-model-item label="部门分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!departDisabled">
-          <j-select-depart v-model="model.selecteddeparts" :multi="true" @back="backDepartInfo" :backDepart="true" :treeOpera="true">></j-select-depart>
-        </a-form-model-item>
-
-        <!--租户分配-->
-        <a-form-model-item label="租户分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!departDisabled">
-          <j-multi-select-tag
-            :disabled="disableSubmit"
-            v-model="model.relTenantIds"
-            :options="tenantsOptions"
-            placeholder="请选择租户">
-          </j-multi-select-tag>
-        </a-form-model-item>
 
         <a-form-model-item label="身份" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-radio-group  v-model="model.userIdentity"  @change="identityChange">
-            <a-radio :value="1">普通用户</a-radio>
-            <a-radio :value="2">上级</a-radio>
+            <a-radio :value="1">学生</a-radio>
+            <a-radio :value="2">社团长</a-radio>
+            <a-radio :value="3">老师</a-radio>
           </a-radio-group>
-        </a-form-model-item>
-        <a-form-model-item label="负责部门" :labelCol="labelCol" :wrapperCol="wrapperCol"  v-if="departIdShow==true">
-          <j-multi-select-tag
-            :disabled="disableSubmit"
-            v-model="model.departIds"
-            :options="nextDepartOptions"
-            placeholder="请选择负责部门">
-          </j-multi-select-tag>
         </a-form-model-item>
 
         <a-form-model-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -115,13 +86,7 @@
           <a-input placeholder="请输入手机号码" v-model="model.phone" />
         </a-form-model-item>
 
-        <a-form-model-item label="座机" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="telephone">
-          <a-input placeholder="请输入座机" v-model="model.telephone" />
-        </a-form-model-item>
 
-        <a-form-model-item label="工作流引擎" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag  v-model="model.activitiSync"  placeholder="请选择是否同步工作流引擎" :type="'radio'" dictCode="activiti_sync"/>
-        </a-form-model-item>
 
       </a-form-model>
     </a-spin>
@@ -141,7 +106,7 @@
   import Vue from 'vue'
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import { getAction } from '@/api/manage'
-  import { addUser,editUser,queryUserRole,queryall } from '@/api/api'
+  import {addUser, editUser, queryUserRole, queryall, checkOnlyEmail} from '@/api/api'
   import { disabledAuthFilter } from "@/utils/authFilter"
   import { duplicateCheck } from '@/api/api'
 
@@ -168,8 +133,8 @@
           confirmpassword: [{required: true, message: '请重新输入登录密码!',},
                             { validator: this.compareToFirstPassword,}],
           realname:[{ required: true, message: '请输入用户名称!' }],
-          phone: [{required: true, message: '请输入手机号!'}, {validator: this.validatePhone}],
-          email: [{validator: this.validateEmail}],
+          phone: [{required: false, message: '请输入手机号!'}, {validator: this.validatePhone}],
+          email: [{required:true,message:'请输入邮箱'},{validator: this.validateEmail}],
           roles:{},
           workNo:[ { required: true, message: '请输入工号' },
                   { validator: this.validateWorkNo }],

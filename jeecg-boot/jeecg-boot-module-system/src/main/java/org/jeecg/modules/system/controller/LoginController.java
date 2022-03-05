@@ -18,7 +18,6 @@ import org.jeecg.common.util.*;
 import org.jeecg.common.util.encryption.EncryptedString;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysLoginModel;
 import org.jeecg.modules.system.service.*;
@@ -51,8 +50,6 @@ public class LoginController {
     private RedisUtil redisUtil;
 	@Autowired
     private ISysDepartService sysDepartService;
-	@Autowired
-	private ISysTenantService sysTenantService;
 	@Autowired
     private ISysDictService sysDictService;
 	@Resource
@@ -484,19 +481,6 @@ public class LoginController {
 			}
 			// update-end--Author:wangshuai Date:20200805 for：如果用戶为选择部门，数据库为存在上一次登录部门，则取一条存进去
 			obj.put("multi_depart", 2);
-		}
-		// update-begin--Author:sunjianlei Date:20210802 for：获取用户租户信息
-		String tenantIds = sysUser.getRelTenantIds();
-		if (oConvertUtils.isNotEmpty(tenantIds)) {
-			List<String> tenantIdList = Arrays.asList(tenantIds.split(","));
-			// 该方法仅查询有效的租户，如果返回0个就说明所有的租户均无效。
-			List<SysTenant> tenantList = sysTenantService.queryEffectiveTenant(tenantIdList);
-			if (tenantList.size() == 0) {
-				result.error500("与该用户关联的租户均已被冻结，无法登录！");
-				return result;
-			} else {
-				obj.put("tenantList", tenantList);
-			}
 		}
 		// update-end--Author:sunjianlei Date:20210802 for：获取用户租户信息
 		// 生成token

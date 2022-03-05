@@ -27,9 +27,9 @@ import lombok.experimental.Accessors;
  * @Author scott
  * @since 2018-12-20
  */
-@Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
+@Data //自动生成getset方法
+@EqualsAndHashCode(callSuper = false) //不调用父类的属性 默认就是不管父类继承的属性的。
+@Accessors(chain = true)//lombok帮助配置好get、set方法 .set()
 public class SysUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -119,11 +119,6 @@ public class SysUser implements Serializable {
     @TableLogic
     private Integer delFlag;
 
-    /**
-     * 工号，唯一键
-     */
-    @Excel(name = "工号", width = 15)
-    private String workNo;
 
     /**
      * 职务，关联职务表
@@ -132,11 +127,6 @@ public class SysUser implements Serializable {
     @Dict(dictTable ="sys_position",dicText = "name",dicCode = "code")
     private String post;
 
-    /**
-     * 座机号
-     */
-    @Excel(name = "座机号", width = 15)
-    private String telephone;
 
     /**
      * 创建人
@@ -157,15 +147,12 @@ public class SysUser implements Serializable {
      * 更新时间
      */
     private Date updateTime;
-    /**
-     * 同步工作流引擎1同步0不同步
-     */
-    private Integer activitiSync;
 
     /**
-     * 身份（0 普通成员 1 上级）
+     * 身份（1 学生 2 社团长 3 老师）
      */
-    @Excel(name="（1普通成员 2上级）",width = 15)
+    @Excel(name="身份",width = 15,dicCode = "identity")
+    @Dict(dicCode = "identity")
     private Integer userIdentity;
 
     /**
@@ -175,13 +162,6 @@ public class SysUser implements Serializable {
     @Dict(dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
     private String departIds;
 
-    /**
-     * 多租户id配置，编辑用户的时候设置
-     */
-    private String relTenantIds;
-
-    /**设备id uniapp推送用*/
-    private String clientId;
 
     /**
      * 邮箱验证码

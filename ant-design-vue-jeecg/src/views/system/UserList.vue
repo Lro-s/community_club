@@ -258,16 +258,16 @@
             dataIndex: 'phone'
           },
           {
-            title: '部门',
+            title: '身份',
             align: "center",
-            width: 180,
-            dataIndex: 'orgCodeTxt'
+            width: 100,
+            dataIndex: 'userIdentity_dictText'
           },
           {
-            title: '负责部门',
+            title: '邮箱',
             align: "center",
-            width: 180,
-            dataIndex: 'departIds_dictText'
+            width: 100,
+            dataIndex: 'email'
           },
           {
             title: '状态',
@@ -388,5 +388,5 @@
   }
 </script>
 <style scoped>
-  @import '~@assets/less/common.less'
+  @import '~@assets/less/common.less';
 </style>

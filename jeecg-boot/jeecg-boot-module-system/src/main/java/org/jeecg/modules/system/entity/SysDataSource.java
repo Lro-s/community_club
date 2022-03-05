@@ -111,10 +111,5 @@ public class SysDataSource {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新日期")
     private java.util.Date updateTime;
-    /**
-     * 所属部门
-     */
-    @Excel(name = "所属部门", width = 15)
-    @ApiModelProperty(value = "所属部门")
-    private String sysOrgCode;
+
 }

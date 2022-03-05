@@ -906,82 +906,6 @@ public class SysUserController {
     }
 
 
-	/**
-	 * 用户注册接口 老接口
-	 * 
-	 * @param jsonObject
-	 * @param user
-	 * @return
-	 */
-	@PostMapping("/register")
-	public Result<JSONObject> userRegister(@RequestBody JSONObject jsonObject, SysUser user) {
-		Result<JSONObject> result = new Result<JSONObject>();
-		String phone = jsonObject.getString("phone");
-		String smscode = jsonObject.getString("smscode");
-		Object code = redisUtil.get(phone);
-		String username = jsonObject.getString("username");
-		//未设置用户名，则用手机号作为用户名
-		if(oConvertUtils.isEmpty(username)){
-            username = phone;
-        }
-        //未设置密码，则随机生成一个密码
-		String password = jsonObject.getString("password");
-		if(oConvertUtils.isEmpty(password)){
-            password = RandomUtil.randomString(8);
-        }
-		String email = jsonObject.getString("email");
-		SysUser sysUser1 = sysUserService.getUserByName(username);
-		if (sysUser1 != null) {
-			result.setMessage("用户名已注册");
-			result.setSuccess(false);
-			return result;
-		}
-		SysUser sysUser2 = sysUserService.getUserByPhone(phone);
-		if (sysUser2 != null) {
-			result.setMessage("该手机号已注册");
-			result.setSuccess(false);
-			return result;
-		}
-
-		if(oConvertUtils.isNotEmpty(email)){
-            SysUser sysUser3 = sysUserService.getUserByEmail(email);
-            if (sysUser3 != null) {
-                result.setMessage("邮箱已被注册");
-                result.setSuccess(false);
-                return result;
-            }
-        }
-        if(null == code){
-            result.setMessage("手机验证码失效，请重新获取");
-            result.setSuccess(false);
-            return result;
-        }
-		if (!smscode.equals(code.toString())) {
-			result.setMessage("手机验证码错误");
-			result.setSuccess(false);
-			return result;
-		}
-
-		try {
-			user.setCreateTime(new Date());// 设置创建时间
-			String salt = oConvertUtils.randomGen(8);
-			String passwordEncode = PasswordUtil.encrypt(username, password, salt);
-			user.setSalt(salt);
-			user.setUsername(username);
-			user.setRealname(username);
-			user.setPassword(passwordEncode);
-			user.setEmail(email);
-			user.setPhone(phone);
-			user.setStatus(CommonConstant.USER_UNFREEZE);
-			user.setDelFlag(CommonConstant.DEL_FLAG_0);
-			user.setActivitiSync(CommonConstant.ACT_SYNC_0);
-			sysUserService.addUserWithRole(user,"ee8626f80f7c2619917b6236f3a7f02b");//默认临时角色 test
-			result.success("注册成功");
-		} catch (Exception e) {
-			result.error500("注册失败");
-		}
-		return result;
-	}
 
     /**
      * 激活邮箱
@@ -1189,45 +1113,7 @@ public class SysUserController {
 			return Result.error(500, "查询失败:" + e.getMessage());
 		}
 	}
-	
-	/**
-	 * 【APP端接口】获取用户列表  根据用户名和真实名 模糊匹配
-	 * @param keyword
-	 * @param pageNo
-	 * @param pageSize
-	 * @return
-	 */
-	@GetMapping("/appUserList")
-	public Result<?> appUserList(@RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(name = "username", required = false) String username,
-			@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-			@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-            @RequestParam(name = "syncFlow", required = false) String syncFlow) {
-		try {
-			//TODO 从查询效率上将不要用mp的封装的page分页查询 建议自己写分页语句
-			LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<SysUser>();
-			if(oConvertUtils.isNotEmpty(syncFlow)){
-                query.eq(SysUser::getActivitiSync, CommonConstant.ACT_SYNC_1);
-            }
-			query.eq(SysUser::getDelFlag,CommonConstant.DEL_FLAG_0);
-			if(oConvertUtils.isNotEmpty(username)){
-			    if(username.contains(",")){
-                    query.in(SysUser::getUsername,username.split(","));
-                }else{
-                    query.eq(SysUser::getUsername,username);
-                }
-            }else{
-                query.and(i -> i.like(SysUser::getUsername, keyword).or().like(SysUser::getRealname, keyword));
-            }
-			Page<SysUser> page = new Page<>(pageNo, pageSize);
-			IPage<SysUser> res = this.sysUserService.page(page, query);
-			return Result.ok(res);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			return Result.error(500, "查询失败:" + e.getMessage());
-		}
-		
-	}
+
 
     /**
      * 获取被逻辑删除的用户列表，无分页
@@ -1338,29 +1224,7 @@ public class SysUserController {
         }
         return result;
     }
-    /**
-     * 移动端保存设备信息
-     * @param clientId
-     * @return
-     */
-    @RequestMapping(value = "/saveClientId", method = RequestMethod.GET)
-    public Result<SysUser> saveClientId(HttpServletRequest request,@RequestParam("clientId")String clientId) {
-        Result<SysUser> result = new Result<SysUser>();
-        try {
-            String username = JwtUtil.getUserNameByToken(request);
-            SysUser sysUser = sysUserService.getUserByName(username);
-            if(sysUser==null) {
-                result.error500("未找到对应用户!");
-            }else {
-                sysUser.setClientId(clientId);
-                sysUserService.updateById(sysUser);
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            result.error500("操作失败!");
-        }
-        return result;
-    }
+
     /**
      * 根据userid获取用户信息和部门员工信息
      *

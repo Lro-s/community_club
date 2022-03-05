@@ -380,7 +380,7 @@
         this.$refs.modalForm2.edit(record)
       },
       handleAdd2: function() {
-        if (this.currentRoleId == '') {
+        if (this.currentRoleId == '' || this.currentRoleId.length > 2) {
           this.$message.error('请选择一个角色!')
         } else {
           this.$refs.modalForm2.roleDisabled = true

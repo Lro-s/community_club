@@ -92,10 +92,6 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Autowired
 	private ISysPermissionDataRuleService sysPermissionDataRuleService;
 
-	@Autowired
-	private ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
-	@Autowired
-	private ThirdAppDingtalkServiceImpl dingtalkService;
 
 	@Autowired
 	ISysCategoryService sysCategoryService;
@@ -298,185 +294,6 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Override
 	public List<DictModel> queryAllDepartBackDictModel() {
 		return sysDictService.queryAllDepartBackDictModel();
-	}
-
-	@Override
-	public void sendSysAnnouncement(MessageDTO message) {
-		this.sendSysAnnouncement(message.getFromUser(),
-				message.getToUser(),
-				message.getTitle(),
-				message.getContent(),
-				message.getCategory());
-		try {
-			// 同步发送第三方APP消息
-			wechatEnterpriseService.sendMessage(message, true);
-			dingtalkService.sendMessage(message, true);
-		} catch (Exception e) {
-			log.error("同步发送第三方APP消息失败！", e);
-		}
-	}
-
-	@Override
-	public void sendBusAnnouncement(BusMessageDTO message) {
-		sendBusAnnouncement(message.getFromUser(),
-				message.getToUser(),
-				message.getTitle(),
-				message.getContent(),
-				message.getCategory(),
-				message.getBusType(),
-				message.getBusId());
-		try {
-			// 同步发送第三方APP消息
-			wechatEnterpriseService.sendMessage(message, true);
-			dingtalkService.sendMessage(message, true);
-		} catch (Exception e) {
-			log.error("同步发送第三方APP消息失败！", e);
-		}
-	}
-
-	@Override
-	public void sendTemplateAnnouncement(TemplateMessageDTO message) {
-		String templateCode = message.getTemplateCode();
-		String title = message.getTitle();
-		Map<String,String> map = message.getTemplateParam();
-		String fromUser = message.getFromUser();
-		String toUser = message.getToUser();
-
-		List<SysMessageTemplate> sysSmsTemplates = sysMessageTemplateService.selectByCode(templateCode);
-		if(sysSmsTemplates==null||sysSmsTemplates.size()==0){
-			throw new JeecgBootException("消息模板不存在，模板编码："+templateCode);
-		}
-		SysMessageTemplate sysSmsTemplate = sysSmsTemplates.get(0);
-		//模板标题
-		title = title==null?sysSmsTemplate.getTemplateName():title;
-		//模板内容
-		String content = sysSmsTemplate.getTemplateContent();
-		if(map!=null) {
-			for (Map.Entry<String, String> entry : map.entrySet()) {
-				String str = "${" + entry.getKey() + "}";
-				if(oConvertUtils.isNotEmpty(title)){
-					title = title.replace(str, entry.getValue());
-				}
-				content = content.replace(str, entry.getValue());
-			}
-		}
-
-		SysAnnouncement announcement = new SysAnnouncement();
-		announcement.setTitile(title);
-		announcement.setMsgContent(content);
-		announcement.setSender(fromUser);
-		announcement.setPriority(CommonConstant.PRIORITY_M);
-		announcement.setMsgType(CommonConstant.MSG_TYPE_UESR);
-		announcement.setSendStatus(CommonConstant.HAS_SEND);
-		announcement.setSendTime(new Date());
-		announcement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);
-		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
-		sysAnnouncementMapper.insert(announcement);
-		// 2.插入用户通告阅读标记表记录
-		String userId = toUser;
-		String[] userIds = userId.split(",");
-		String anntId = announcement.getId();
-		for(int i=0;i<userIds.length;i++) {
-			if(oConvertUtils.isNotEmpty(userIds[i])) {
-				SysUser sysUser = userMapper.getUserByName(userIds[i]);
-				if(sysUser==null) {
-					continue;
-				}
-				SysAnnouncementSend announcementSend = new SysAnnouncementSend();
-				announcementSend.setAnntId(anntId);
-				announcementSend.setUserId(sysUser.getId());
-				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
-				sysAnnouncementSendMapper.insert(announcementSend);
-				JSONObject obj = new JSONObject();
-				obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
-				obj.put(WebsocketConst.MSG_USER_ID, sysUser.getId());
-				obj.put(WebsocketConst.MSG_ID, announcement.getId());
-				obj.put(WebsocketConst.MSG_TXT, announcement.getTitile());
-				webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
-			}
-		}
-		try {
-			// 同步企业微信、钉钉的消息通知
-			dingtalkService.sendActionCardMessage(announcement, true);
-			wechatEnterpriseService.sendTextCardMessage(announcement, true);
-		} catch (Exception e) {
-			log.error("同步发送第三方APP消息失败！", e);
-		}
-
-	}
-
-	@Override
-	public void sendBusTemplateAnnouncement(BusTemplateMessageDTO message) {
-		String templateCode = message.getTemplateCode();
-		String title = message.getTitle();
-		Map<String,String> map = message.getTemplateParam();
-		String fromUser = message.getFromUser();
-		String toUser = message.getToUser();
-		String busId = message.getBusId();
-		String busType = message.getBusType();
-
-		List<SysMessageTemplate> sysSmsTemplates = sysMessageTemplateService.selectByCode(templateCode);
-		if(sysSmsTemplates==null||sysSmsTemplates.size()==0){
-			throw new JeecgBootException("消息模板不存在，模板编码："+templateCode);
-		}
-		SysMessageTemplate sysSmsTemplate = sysSmsTemplates.get(0);
-		//模板标题
-		title = title==null?sysSmsTemplate.getTemplateName():title;
-		//模板内容
-		String content = sysSmsTemplate.getTemplateContent();
-		if(map!=null) {
-			for (Map.Entry<String, String> entry : map.entrySet()) {
-				String str = "${" + entry.getKey() + "}";
-				title = title.replace(str, entry.getValue());
-				content = content.replace(str, entry.getValue());
-			}
-		}
-		SysAnnouncement announcement = new SysAnnouncement();
-		announcement.setTitile(title);
-		announcement.setMsgContent(content);
-		announcement.setSender(fromUser);
-		announcement.setPriority(CommonConstant.PRIORITY_M);
-		announcement.setMsgType(CommonConstant.MSG_TYPE_UESR);
-		announcement.setSendStatus(CommonConstant.HAS_SEND);
-		announcement.setSendTime(new Date());
-		announcement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);
-		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
-		announcement.setBusId(busId);
-		announcement.setBusType(busType);
-		announcement.setOpenType(SysAnnmentTypeEnum.getByType(busType).getOpenType());
-		announcement.setOpenPage(SysAnnmentTypeEnum.getByType(busType).getOpenPage());
-		sysAnnouncementMapper.insert(announcement);
-		// 2.插入用户通告阅读标记表记录
-		String userId = toUser;
-		String[] userIds = userId.split(",");
-		String anntId = announcement.getId();
-		for(int i=0;i<userIds.length;i++) {
-			if(oConvertUtils.isNotEmpty(userIds[i])) {
-				SysUser sysUser = userMapper.getUserByName(userIds[i]);
-				if(sysUser==null) {
-					continue;
-				}
-				SysAnnouncementSend announcementSend = new SysAnnouncementSend();
-				announcementSend.setAnntId(anntId);
-				announcementSend.setUserId(sysUser.getId());
-				announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
-				sysAnnouncementSendMapper.insert(announcementSend);
-				JSONObject obj = new JSONObject();
-				obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
-				obj.put(WebsocketConst.MSG_USER_ID, sysUser.getId());
-				obj.put(WebsocketConst.MSG_ID, announcement.getId());
-				obj.put(WebsocketConst.MSG_TXT, announcement.getTitile());
-				webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
-			}
-		}
-		try {
-			// 同步企业微信、钉钉的消息通知
-			dingtalkService.sendActionCardMessage(announcement, true);
-			wechatEnterpriseService.sendTextCardMessage(announcement, true);
-		} catch (Exception e) {
-			log.error("同步发送第三方APP消息失败！", e);
-		}
-
 	}
 
 	@Override
@@ -1152,4 +969,23 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		return sysDictService.queryTableDictTextByKeys(table, text, code, Arrays.asList(keys.split(",")));
 	}
 
+	@Override
+	public void sendSysAnnouncement(MessageDTO message) {
+
+	}
+
+	@Override
+	public void sendBusAnnouncement(BusMessageDTO message) {
+
+	}
+
+	@Override
+	public void sendTemplateAnnouncement(TemplateMessageDTO message) {
+
+	}
+
+	@Override
+	public void sendBusTemplateAnnouncement(BusTemplateMessageDTO message) {
+
+	}
 }
