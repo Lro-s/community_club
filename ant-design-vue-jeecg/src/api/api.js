@@ -66,6 +66,28 @@ const treeList = (params)=>getAction("/sys/dict/treeList",params);
 const addDictItem = (params)=>postAction("/sys/dictItem/add",params);
 const editDictItem = (params)=>putAction("/sys/dictItem/edit",params);
 
+//社团信息
+const findcommunityinfo = ()=>getAction("/community/findcommunityinfo");
+
+//博客标签数
+const findtaginfo = ()=>getAction("/community/findtaginfo");
+
+//学生社团年级分布情况数
+const findgradeinfo = ()=>getAction("/community/findgradeinfo");
+
+//根据用户名判断是否有加入社团
+const findusernameinapplication = (params)=>postAction("/community/findusernameinapplication",params);
+
+//根据用户名判断是否有加入社团
+const findcommunitynamefromsysuser = (params)=>postAction("/community/findcommunitynamefromsysuser",params);
+
+//查出热度前三的社团名字
+const topcommunityname = ()=>getAction("/community/topcommunityname");
+
+//查出和用户名类似的用户和推荐社团
+const chuanzhi = ()=>getAction("/python/chuanzhi");
+
+
 //字典标签专用（通过code获取字典数组）
 export const ajaxGetDictItems = (code, params)=>getAction(`/sys/dict/getDictItems/${code}`,params);
 //从缓存中获取字典配置
@@ -161,7 +183,12 @@ export {
   queryMyDepartTreeList,
   getUserNoticeInfo,
   getDictItemsFromCache,
-  checkOnlyEmail
+  checkOnlyEmail,
+  findcommunityinfo,
+  findtaginfo,
+  findgradeinfo,
+  findusernameinapplication,
+  topcommunityname
 }
 
 

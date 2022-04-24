@@ -548,6 +548,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         Result<JSONObject> result = new Result<>();
         //校驗前端傳值
         checkRegisterInfo(userRegisterDTO, result);
+
+
         //註冊用戶邏輯
         registerUser(userRegisterDTO);
         result.setMessage("操作成功！");
@@ -573,11 +575,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw e;
         }
         publishEvent(sysUser);
+
         //这里不能用@async来做，这样就相当于同步了，这里可以用spring的事件监听机制来实现监听发送邮件
         //發送郵件
 //        sendMessage(sysUser);
 
     }
+
+    @Override
+    public Boolean studentRoleInsert(String userid) {
+        Boolean aBoolean = userMapper.studentRoleInsert(userid);
+        return aBoolean;
+    }
+
 
     //邮箱内容
     private void publishEvent(SysUser sysUser) {

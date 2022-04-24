@@ -180,5 +180,11 @@
 		select * from sys_user where email=#{email}
 	</select>
 
+	<insert id="studentRoleInsert" parameterType="java.lang.String">
+		insert into sys_user_role values(UUID(),#{id},'1492853510671196161')
+	</insert>
+
+
+
 
 </mapper>

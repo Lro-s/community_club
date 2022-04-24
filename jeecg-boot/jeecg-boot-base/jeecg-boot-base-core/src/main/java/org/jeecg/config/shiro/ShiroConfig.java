@@ -83,6 +83,20 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/sys/sms", "anon");//短信验证码
         filterChainDefinitionMap.put("/sys/actcode", "anon");//短信验证码
         filterChainDefinitionMap.put("/sys/phoneLogin", "anon");//手机登录
+
+        filterChainDefinitionMap.put("/community/findcommunityinfo", "anon");//查询社团信息
+        filterChainDefinitionMap.put("/community/findtaginfo", "anon");//查询社团信息
+        filterChainDefinitionMap.put("/community/findgradeinfo", "anon");//查询年级信息
+        filterChainDefinitionMap.put("/community/findusernameinapplication", "anon");
+
+        filterChainDefinitionMap.put("/community/findcommunitynamefromsysuser", "anon");
+
+
+
+        filterChainDefinitionMap.put("/test/jeecgDemo/hello", "anon");
+
+        filterChainDefinitionMap.put("/python/chuanzhi", "anon");
+
         filterChainDefinitionMap.put("/sys/user/checkOnlyUser", "anon");//校验用户是否存在
         filterChainDefinitionMap.put("/activation/{userId}/{activationCode}", "anon");//激活邮箱
         filterChainDefinitionMap.put("/emailRegister", "anon");//邮箱注册

@@ -20,6 +20,7 @@ import java.util.List;
  * @Author scott
  * @since 2018-12-20
  */
+
 public interface SysUserMapper extends BaseMapper<SysUser> {
 	/**
 	  * 通过用户账号查询用户信息
@@ -146,4 +147,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	void activationEmail(@Param("sysUser") SysUser sysUser);
 
 	SysUser findUserByEmail(@Param("email") String email);
+
+	Boolean studentRoleInsert(@Param("id")  String userId);
+
 }

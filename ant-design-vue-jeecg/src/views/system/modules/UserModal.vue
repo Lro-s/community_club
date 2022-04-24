@@ -52,9 +52,9 @@
 
         <a-form-model-item label="身份" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-radio-group  v-model="model.userIdentity"  @change="identityChange">
-            <a-radio :value="1">学生</a-radio>
-            <a-radio :value="2">社团长</a-radio>
-            <a-radio :value="3">老师</a-radio>
+            <a-radio :value="0">学生</a-radio>
+            <a-radio :value="1">社团长</a-radio>
+            <a-radio :value="2">老师</a-radio>
           </a-radio-group>
         </a-form-model-item>
 
@@ -86,6 +86,10 @@
           <a-input placeholder="请输入手机号码" v-model="model.phone" />
         </a-form-model-item>
 
+        <a-form-model-item >
+
+        </a-form-model-item>
+
 
 
       </a-form-model>
@@ -109,6 +113,7 @@
   import {addUser, editUser, queryUserRole, queryall, checkOnlyEmail} from '@/api/api'
   import { disabledAuthFilter } from "@/utils/authFilter"
   import { duplicateCheck } from '@/api/api'
+  import {validateCheckRule} from "@/utils/util";
 
   export default {
     name: "UserModal",
@@ -132,8 +137,8 @@
                      {validator: this.validateToNextPassword,trigger: 'change'}],
           confirmpassword: [{required: true, message: '请重新输入登录密码!',},
                             { validator: this.compareToFirstPassword,}],
-          realname:[{ required: true, message: '请输入用户名称!' }],
-          phone: [{required: false, message: '请输入手机号!'}, {validator: this.validatePhone}],
+          realname:[{ required: true, message: '请输入用户名称!' }],//this.validatePhone
+          phone: [{required: false, message: '请输入手机号!'}, {validator: (rule,value,callback) => validateCheckRule('phone',value,callback)}],
           email: [{required:true,message:'请输入邮箱'},{validator: this.validateEmail}],
           roles:{},
           workNo:[ { required: true, message: '请输入工号' },

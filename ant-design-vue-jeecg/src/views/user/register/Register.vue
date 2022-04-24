@@ -33,7 +33,7 @@
       </a-form-model-item>
 
       <a-row :gutter="16">
-      <a-col class="gutter-row" :span="16">
+      <a-col class="gutter-row" >
       <a-form-model-item prop="email">
         <a-input v-model="model.email" size="large" placeholder="请输入邮箱">
           <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -41,14 +41,14 @@
       </a-form-model-item>
       </a-col>
 
-      <a-col class="gutter-row" :span="8">
-        <a-button
-          class="getCaptcha"
-          size="large"
-          :disabled="state.smsSendBtn"
-          @click.stop.prevent="getCaptcha"
-          v-text="!state.smsSendBtn && '发送邮箱'||(state.time+' s')"></a-button>
-      </a-col>
+<!--      <a-col class="gutter-row" :span="8">-->
+<!--        <a-button-->
+<!--          class="getCaptcha"-->
+<!--          size="large"-->
+<!--          :disabled="state.smsSendBtn"-->
+<!--          @click.stop.prevent="getCaptcha"-->
+<!--          v-text="!state.smsSendBtn && '发送邮箱'||(state.time+' s')"></a-button>-->
+<!--      </a-col>-->
       </a-row>
 
 

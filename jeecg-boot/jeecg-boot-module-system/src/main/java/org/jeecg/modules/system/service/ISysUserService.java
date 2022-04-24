@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.modules.system.dto.UserRegisterDTO;
@@ -263,4 +264,6 @@ public interface ISysUserService extends IService<SysUser> {
     SysUser findByEmail(String email);
 
 	Boolean publishEvent1(SysUser sysUser,String captcha);
+
+	Boolean studentRoleInsert(String userId);
 }

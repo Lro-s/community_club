@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.controller;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -96,6 +97,9 @@ public class SysUserController {
 
     @Resource
     private BaseCommonService baseCommonService;
+
+    @Resource
+    public CommunityService communityService;
 
     /**
      * 获取用户列表数据
@@ -921,6 +925,9 @@ public class SysUserController {
         if (code == UserConstants.ACTIVATION_SUCCESS) {
             result.setCode(200);
             result.setMessage("您的账号已经可以正常使用了");
+            //插入一条记录在用户角色表中
+            Boolean aBoolean = sysUserService.studentRoleInsert(userId);
+            //调用插入用户角色的位置
             result.setSuccess(true);
         } else if (code == UserConstants.ACTIVATION_REPEAT) {
             result.setMessage("无效的操作，该账号已被激活");

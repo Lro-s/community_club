@@ -1,25 +1,25 @@
-<template>
-  <a-list
-    itemLayout="horizontal"
-    :dataSource="data"
-  >
+<!--<template>-->
+<!--  <a-list-->
+<!--    itemLayout="horizontal"-->
+<!--    :dataSource="data"-->
+<!--  >-->
 
-  </a-list>
-</template>
+<!--  </a-list>-->
+<!--</template>-->
 
-<script>
-  export default {
-    data () {
-      return {
-        data: []
-      }
-    },
-    methods: {
+<!--<script>-->
+<!--  export default {-->
+<!--    data () {-->
+<!--      return {-->
+<!--        data: []-->
+<!--      }-->
+<!--    },-->
+<!--    methods: {-->
 
-    }
-  }
-</script>
+<!--    }-->
+<!--  }-->
+<!--</script>-->
 
-<style scoped>
+<!--<style scoped>-->
 
-</style>
+<!--</style>-->

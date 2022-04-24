@@ -1,14 +1,12 @@
 <template>
   <div class="logo">
-    <router-link :to="routerLinkTo">
 
       <!-- update-begin- author:sunjianlei --- date:20190814 --- for: logo颜色根据主题颜色变化 -->
       <img v-if="navTheme === 'dark'" src="~@/assets/logo.png" alt="logo">
       <img v-else src="~@/assets/logo.png" alt="logo">
       <!-- update-begin- author:sunjianlei --- date:20190814 --- for: logo颜色根据主题颜色变化 -->
 
-      <span v-if="showTitle">{{ title }}</span>
-    </router-link>
+      <span v-if="showTitle" ><font color="#f0f8ff"> {{ title }}</font></span>
   </div>
 </template>
 
@@ -28,12 +26,7 @@
         type: Boolean,
         default: true,
         required: false
-      },
-      // 点击Logo跳转地址
-      routerLinkTo: {
-        type: Object,
-        default: () => ({name: '/dashboard/analysis'})
-      },
+      }
     }
   }
 </script>

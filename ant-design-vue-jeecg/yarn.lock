@@ -923,9 +923,9 @@
     error-stack-parser "^2.0.0"
     string-width "^2.0.0"
 
-"@tinymce/tinymce-vue@^2.1.0":
+"@tinymce/tinymce-vue@2.1.0":
   version "2.1.0"
-  resolved "https://registry.npmjs.org/@tinymce/tinymce-vue/-/tinymce-vue-2.1.0.tgz#cac3e935b217a277424f2258f3235824aa3c17c0"
+  resolved "https://registry.npmmirror.com/@tinymce/tinymce-vue/-/tinymce-vue-2.1.0.tgz#cac3e935b217a277424f2258f3235824aa3c17c0"
   integrity sha512-lDIpeLbkaobS/f00wWaOhGJdiZLdtL0dEDYB4JvqgVeAAoaDFG2PvXXP/kN49xpHpUe8vOdt7xFaN48nrPmsbQ==
   dependencies:
     vue "^2.5.17"
@@ -4560,6 +4560,14 @@ ecc-jsbn@~0.1.1:
   dependencies:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
+
+echarts@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.npmmirror.com/echarts/-/echarts-5.3.0.tgz#39342fcf0f763413fecd9d2afd1c415163de694d"
+  integrity sha512-zENufmwFE6WjM+24tW3xQq4ICqQtI0CGj4bDVDNd3BK3LtaA/5wBp+64ykIyKy3QElz0cieKqSYP4FX9Lv9MwQ==
+  dependencies:
+    tslib "2.3.0"
+    zrender "5.3.0"
 
 ee-first@1.1.1:
   version "1.1.1"
@@ -10870,9 +10878,9 @@ tinycolor2@^1.4.1:
   resolved "https://registry.npmjs.org/tinycolor2/-/tinycolor2-1.4.1.tgz#f4fad333447bc0b07d4dc8e9209d8f39a8ac77e8"
   integrity sha1-9PrTM0R7wLB9TcjpIJ2POaisd+g=
 
-tinymce@^5.3.2:
+tinymce@5.4.1:
   version "5.4.1"
-  resolved "https://registry.npmjs.org/tinymce/-/tinymce-5.4.1.tgz#4c101e78cbd22c148d6013f7c66eb0cb480723db"
+  resolved "https://registry.npmmirror.com/tinymce/-/tinymce-5.4.1.tgz#4c101e78cbd22c148d6013f7c66eb0cb480723db"
   integrity sha512-eUjwDVCTSHSnFfpzX5TjTHXsGj5gvPQwzo3RFDF374gfK5voHqcRGojvQnu4NtNW1BAb012/KW1tkXBbUrEveg==
 
 tmp@^0.0.33:
@@ -10978,6 +10986,11 @@ tsconfig-paths@^3.9.0:
     json5 "^1.0.1"
     minimist "^1.2.0"
     strip-bom "^3.0.0"
+
+tslib@2.3.0:
+  version "2.3.0"
+  resolved "https://registry.npmmirror.com/tslib/-/tslib-2.3.0.tgz#803b8cdab3e12ba581a4ca41c8839bbb0dacb09e"
+  integrity sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==
 
 tslib@^1.10.0, tslib@^1.9.0:
   version "1.13.0"
@@ -12033,3 +12046,10 @@ yorkie@^2.0.0:
     is-ci "^1.0.10"
     normalize-path "^1.0.0"
     strip-indent "^2.0.0"
+
+zrender@5.3.0:
+  version "5.3.0"
+  resolved "https://registry.npmmirror.com/zrender/-/zrender-5.3.0.tgz#297c05dc2521362816c4ddced10a1e306646bbc8"
+  integrity sha512-Ln2QB5uqI1ftNYMtCRxd+XDq6MOttLgam2tmhKAVA+j0ko47UT+VNlDvKTkqe4K2sJhBvB0EhYNLebqlCTjatQ==
+  dependencies:
+    tslib "2.3.0"

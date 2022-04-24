@@ -8,6 +8,14 @@ import router from './router'
 import store from './store/'
 import { VueAxios } from "@/utils/request"
 
+import qs from 'qs'
+Vue.prototype.$qs = qs
+
+import echarts from './utils/echats'
+Vue.prototype.$echarts = echarts
+
+
+
 require('@jeecg/antd-online-mini')
 require('@jeecg/antd-online-mini/dist/OnlineForm.css')
 
