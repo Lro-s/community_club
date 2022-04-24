@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.CommunityMapper">
+
+
+    <select id="findAllInfo" resultType="org.jeecg.modules.system.entity.Community">
+        select * from community
+    </select>
+
+
+    <select id="findtagInfo" resultType="org.jeecg.modules.system.entity.tag">
+        select a.item_text as tag ,b.shuliang as shuliang
+        from
+            (
+                select di.item_text,di.item_value from
+                                                      sys_dict d,sys_dict_item di
+                where d.id='1493632794496770050'
+                  and d.id = di.dict_id
+            ) a,
+            (
+                select
+                    tag,count(1) as shuliang
+                from
+                    forum
+                group by tag) b
+        where a.item_value = b.tag
+    </select>
+
+    <select id="findgradeInfo" resultType="org.jeecg.modules.system.entity.gradeinfo">
+        select student_gender as sex, student_grade as grade,count(1) as shuliang
+        from community_student
+        group by student_gender,student_grade
+    </select>
+
+    <select id="findusernameinapplication" resultType="org.jeecg.modules.system.entity.communityname">
+        select user_code,community_name from community_application where user_code = #{usercode} and state='1'
+    </select>
+    
+    <select id="findcommunitynamefromsysuser" resultType="java.lang.String">
+        select community_name from sys_user where username = #{usercode}
+    </select>
+
+    <select id="topcommunityname" resultType="org.jeecg.modules.system.entity.topcommunity">
+        select community_name,count(1) as total from community_application group by community_name
+        order by total desc LIMIT 3
+    </select>
+
+</mapper>
